@@ -1,7 +1,7 @@
 import { fork, take, put, call } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 
-const wsURL = 'ws://localhost:8080';
+const wsURL = process.env.REACT_APP_WS_URL;
 
 const setStatus = payload => ({ type: 'SET_STATUS', payload });
 const setMessage = payload => ({ type: 'SET_MESSAGE', payload });

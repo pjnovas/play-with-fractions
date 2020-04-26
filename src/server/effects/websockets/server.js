@@ -6,16 +6,18 @@ import shortid from 'shortid';
 import socketEffects from './socket';
 
 import { newConnection } from '../../reducer/sockets';
-import { setPlayers } from '../../reducer/room/settings';
 
 const ServerActions = {
   NewConnection: '@server/NEW_CONNECTION',
   UnexpectedNewConnection: '@server/ERR_NEW_CONNECTION'
 };
 
-const adminToken = '123456789';
+const port = process.env.WSS_PORT;
+const adminToken = process.env.ADMIN_TOKEN;
+const qsToken = process.env.REACT_APP_QS_TOKEN;
+const qsRoomId = process.env.REACT_APP_QS_ROOM;
 
-const createWebSocketServer = () => new WebSocket.Server({ port: 8080 });
+const createWebSocketServer = () => new WebSocket.Server({ port });
 
 const createWebServerChannel = server =>
   eventChannel(emit => {
@@ -23,12 +25,12 @@ const createWebServerChannel = server =>
       const data = {};
       const searchParams = new URLSearchParams(req.url.replace('/', ''));
 
-      const token = searchParams.get('token');
+      const token = searchParams.get(qsToken);
       if (token === adminToken) {
         data.isAdmin = true;
       }
 
-      data.roomId = searchParams.get('rid');
+      data.roomId = searchParams.get(qsRoomId);
 
       if (!data.isAdmin && !data.roomId) {
         ws.send(JSON.stringify({ error: '401 Unauthorized' }));
@@ -84,7 +86,6 @@ const serverListener = function* (server) {
 
 export default function* () {
   const server = yield call(createWebSocketServer);
-  yield put(setPlayers(5));
   yield fork(serverListener, server);
   yield fork(broadcaster, server);
 }
