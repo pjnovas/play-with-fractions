@@ -2,24 +2,51 @@
   "name": "play-with-fractions",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@reduxjs/toolkit": "^1.1.0",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-redux": "^7.1.3",
-    "react-scripts": "3.4.1"
-  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "node ./src/server/start.js",
+    "prettier": "prettier --write src/**/*.{js,jsx,json}"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.1.0",
+    "esm": "^3.2.25",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-redux": "^7.1.3",
+    "react-scripts": "3.4.1",
+    "redux-logger": "^3.0.6",
+    "redux-saga": "^1.1.3",
+    "ws": "^7.2.3"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.5.0",
+    "@testing-library/react": "^10.0.3",
+    "@testing-library/user-event": "^10.0.2",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.1.7",
+    "prettier": "^2.0.5"
+  },
+  "prettier": {
+    "trailingComma": "none",
+    "singleQuote": true,
+    "endOfLine": "auto",
+    "arrowParens": "avoid"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,json}": [
+      "yarn prettier"
+    ]
   },
   "browserslist": {
     "production": [
