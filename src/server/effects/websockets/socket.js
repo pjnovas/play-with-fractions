@@ -19,7 +19,6 @@ const createWebSocketsChannel = socket =>
 
 const socketSender = function* (socket) {
   while (true) {
-    // TODO: implement ROOMs and SocketIDs
     const action = yield take(`SEND:${socket.id}`);
     socket.send(JSON.stringify(action));
   }
