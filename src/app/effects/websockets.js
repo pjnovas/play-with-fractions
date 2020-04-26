@@ -6,7 +6,11 @@ const wsURL = 'ws://localhost:8080';
 const setStatus = payload => ({ type: 'SET_STATUS', payload });
 const setMessage = payload => ({ type: 'SET_MESSAGE', payload });
 
-const createWebSocketConnection = () => new WebSocket(wsURL);
+const createWebSocketConnection = () => {
+  // const urlParams = new URLSearchParams(window.location.search);
+  // const myParam = urlParams.get('toe');
+  return new WebSocket(`${wsURL}${window.location.search}`);
+};
 
 const createWebSocketsChannel = socket =>
   eventChannel(emit => {
