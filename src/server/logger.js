@@ -25,6 +25,6 @@ export default store => next => action => {
     )
   );
 
-  console.groupEnd();
+  console.groupEnd(action.type);
   return result;
 };
