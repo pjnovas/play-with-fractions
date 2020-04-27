@@ -1,6 +1,9 @@
 import React from 'react';
 import styles from './RoomForm.module.css';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import { create } from 'app/reducer/room/settings';
+
 import RoomLink from './RoomLink';
 
 const cards = [
@@ -57,7 +60,8 @@ const getHelpCards = (cards, maxPerTable) => {
   } rondas con selección entre ${maxPerTable} cartas por ronda`;
 };
 
-const RoomForm = ({ onSubmit }) => {
+const RoomForm = () => {
+  const dispatch = useDispatch();
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
       maxPlayers: 24,
@@ -65,6 +69,18 @@ const RoomForm = ({ onSubmit }) => {
       cards: cards.join('\n')
     }
   });
+
+  const onSubmit = room => {
+    dispatch({
+      type: 'WS:SEND',
+      payload: create({
+        ...room,
+        maxPlayers: Number(room.maxPlayers),
+        maxPerTable: Number(room.maxPerTable),
+        cards: room.cards.split('\n')
+      })
+    });
+  };
 
   const maxPlayers = Number(watch('maxPlayers'));
   const maxPerTable = Number(watch('maxPerTable'));

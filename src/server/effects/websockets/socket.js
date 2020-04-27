@@ -1,8 +1,8 @@
 import { select, take, fork, put, call } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
-import { getAdminIds } from '../../reducer/sockets';
+import { getAdminIds } from 'server/reducer/sockets';
 
-import { create } from '../../../app/reducer/room/settings';
+import { create } from 'app/reducer/room/settings';
 const adminActions = [create.type];
 
 const createWebSocketsChannel = socket =>

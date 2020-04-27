@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 import { take, fork, put, call } from 'redux-saga/effects';
 
-import { newConnection } from '../../reducer/sockets';
+import { newConnection } from 'server/reducer/sockets';
 
 import socketEffects from './socket';
 import createWebServerChannel from './serverChannel';
@@ -23,9 +23,6 @@ const serverListener = function* (server) {
       switch (type) {
         case ServerActions.NewConnection: {
           const { ws, ...data } = payload;
-          if (data.roomId) {
-            // TODO: check if room exists
-          }
           yield put(newConnection({ id: ws.id, ...data }));
           break;
         }

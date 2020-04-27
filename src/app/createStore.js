@@ -4,8 +4,8 @@ import createSagaMiddleware from 'redux-saga';
 // TODO: react features here
 // import counter from '../features/counter/counterSlice';
 
-import reducer from './reducer';
-import effects from './effects';
+import reducer from 'app/reducer';
+import effects from 'app/effects';
 
 const sagaMiddleware = createSagaMiddleware();
 
