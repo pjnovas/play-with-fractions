@@ -1,15 +1,20 @@
-import { all, takeEvery } from 'redux-saga/effects';
+import { prop } from 'lodash/fp';
+import { all, takeEvery, select, put } from 'redux-saga/effects';
 
 import { create } from '../../app/reducer/room/settings';
 import { join } from '../../app/reducer/room/players';
 
-const createRoom = function* (action) {
-  console.log('createRoom!');
-  console.log(action);
+const createRoom = function* () {
+  const type = create.type;
+  const room = yield select(prop('room.settings'));
 
-  // TODO: send back the created room
-  // yield select
-  // yield put('BROADCAST:ADMINS')
+  yield put({
+    type: 'WS:BROADCAST:ADMINS',
+    payload: {
+      type,
+      payload: room
+    }
+  });
 };
 
 const joinPlayer = function* (action) {};

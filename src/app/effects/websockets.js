@@ -4,7 +4,7 @@ import { eventChannel } from 'redux-saga';
 const wsURL = process.env.REACT_APP_WS_URL;
 
 const setStatus = payload => ({ type: 'SET_STATUS', payload });
-const setMessage = payload => ({ type: 'SET_MESSAGE', payload });
+// const setMessage = payload => ({ type: 'SET_MESSAGE', payload });
 
 const createWebSocketConnection = () =>
   new WebSocket(`${wsURL}${window.location.search}`);
@@ -25,7 +25,7 @@ const createWebSocketsChannel = socket =>
     });
 
     socket.addEventListener('message', event => {
-      emit(setMessage(JSON.parse(event.data)));
+      emit(JSON.parse(event.data));
     });
 
     return socket.close;
@@ -42,7 +42,7 @@ const listener = function* (socket) {
 
 const sender = function* (socket) {
   while (true) {
-    const { payload } = yield take('WS-SEND');
+    const { payload } = yield take('WS:SEND');
     socket.send(JSON.stringify(payload));
   }
 };

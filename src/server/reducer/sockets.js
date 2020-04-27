@@ -15,27 +15,21 @@ export const { newConnection } = sockets.actions;
 
 // Selectors
 
+const reduceById = (key, value) => (all, socket) =>
+  socket[key] === value ? [...all, socket.id] : all;
+
 export const getRoomIds = roomId =>
-  createSelector(
-    prop(sockets.name),
-    reduce(
-      (all, socket) => (socket.roomId === roomId ? [...all, socket.id] : all),
-      []
-    )
-  );
+  createSelector(prop(sockets.name), reduce(reduceById('roomId', roomId), []));
 
 export const getTableIds = tableId =>
   createSelector(
     prop(sockets.name),
-    reduce(
-      (all, socket) => (socket.tableId === tableId ? [...all, socket.id] : all),
-      []
-    )
+    reduce(reduceById('tableId', tableId), [])
   );
 
 export const getAdminIds = createSelector(
   prop(sockets.name),
-  reduce((all, socket) => (socket.isAdmin ? [...all, socket.id] : all), [])
+  reduce(reduceById('isAdmin', true), [])
 );
 
 export default sockets.reducer;

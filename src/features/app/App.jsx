@@ -12,7 +12,7 @@ const App = () => {
 
   const createRoom = () => {
     dispatch({
-      type: 'WS-SEND',
+      type: 'WS:SEND',
       payload: create({
         name: 'My Room',
         // cards,

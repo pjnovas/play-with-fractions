@@ -3,16 +3,16 @@ import { take, fork, select } from 'redux-saga/effects';
 import { getTableIds, getRoomIds, getAdminIds } from '../../reducer/sockets';
 
 const broadcastToIds = (server, ids, action) => {
-  server.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN && ids.includes(client.id)) {
-      server.send(JSON.stringify(action));
+  server.clients.forEach(ws => {
+    if (ws.readyState === WebSocket.OPEN && ids.includes(ws.id)) {
+      ws.send(JSON.stringify(action));
     }
   });
 };
 
 const roomBroadcaster = function* (server) {
   while (true) {
-    const { meta, payload } = yield take('BROADCAST:ROOM');
+    const { meta, payload } = yield take('WS:BROADCAST:ROOM');
     const ids = yield select(getRoomIds(meta.roomId));
     broadcastToIds(server, ids, payload);
   }
@@ -20,7 +20,7 @@ const roomBroadcaster = function* (server) {
 
 const tableBroadcaster = function* (server) {
   while (true) {
-    const { meta, payload } = yield take('BROADCAST:TABLE');
+    const { meta, payload } = yield take('WS:BROADCAST:TABLE');
     const ids = yield select(getTableIds(meta.tableId));
     broadcastToIds(server, ids, payload);
   }
@@ -28,7 +28,7 @@ const tableBroadcaster = function* (server) {
 
 const adminBroadcaster = function* (server) {
   while (true) {
-    const { payload } = yield take('BROADCAST:ADMINS');
+    const { payload } = yield take('WS:BROADCAST:ADMINS');
     const ids = yield select(getAdminIds);
     broadcastToIds(server, ids, payload);
   }

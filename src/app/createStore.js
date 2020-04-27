@@ -1,8 +1,10 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
-import counter from '../features/counter/counterSlice';
 
-// import reducer from './reducer';
+// TODO: react features here
+// import counter from '../features/counter/counterSlice';
+
+import reducer from './reducer';
 import effects from './effects';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -13,9 +15,7 @@ export default () => {
   const store = configureStore({
     devTools: true,
     middleware,
-    reducer: {
-      counter
-    }
+    reducer
   });
 
   sagaMiddleware.run(effects);
