@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './RoomForm.module.css';
 import { useForm } from 'react-hook-form';
+import RoomLink from './RoomLink';
 
 const cards = [
   '1',
@@ -115,6 +116,7 @@ const RoomForm = ({ onSubmit }) => {
           </div>
           <textarea ref={register} name="cards" />
         </div>
+        <RoomLink />
         <div className={styles.footer}>
           <button type="submit">Crear</button>
         </div>
