@@ -1,5 +1,9 @@
-import { take, fork, put, call } from 'redux-saga/effects';
+import { select, take, fork, put, call } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
+import { getAdminIds } from '../../reducer/sockets';
+
+import { create } from '../../../app/reducer/room/settings';
+const adminActions = [create.type];
 
 const createWebSocketsChannel = socket =>
   eventChannel(emit => {
@@ -30,7 +34,15 @@ const socketListener = function* (socket) {
   while (true) {
     try {
       const action = yield take(channel);
-      // TODO: translate action
+
+      if (adminActions.includes(action.type)) {
+        const adminIds = yield select(getAdminIds);
+        if (!adminIds.includes(socket.id)) {
+          console.log('DISALLOWED ACTION', action);
+          return; // DISALLOWED
+        }
+      }
+
       yield put(action);
     } catch (e) {
       console.log('Websocket Err: ', e);

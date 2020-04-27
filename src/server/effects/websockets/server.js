@@ -23,6 +23,9 @@ const serverListener = function* (server) {
       switch (type) {
         case ServerActions.NewConnection: {
           const { ws, ...data } = payload;
+          if (data.roomId) {
+            // TODO: check if room exists
+          }
           yield put(newConnection({ id: ws.id, ...data }));
           break;
         }

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import shortid from 'shortid';
 
 const Status = {
   WaitingPlayers: 'WAITING_PLAYERS',
@@ -7,7 +8,7 @@ const Status = {
 };
 
 const createTable = ({ waitFor = 3 } = {}) => ({
-  id: 'XYZ', // generate id
+  id: shortid.generate(),
   waitFor: 0,
   players: [],
   state: {
@@ -20,9 +21,16 @@ const createTable = ({ waitFor = 3 } = {}) => ({
 });
 
 export const tables = createSlice({
-  name: 'tables',
-  initialState: [createTable()],
-  reducers: {}
+  name: 'room/tables',
+  initialState: [],
+  reducers: {
+    create: (state, action) => {
+      state.push(createTable(action.payload));
+    },
+    join: (state, action) => {
+      state.players.push(action.payload);
+    }
+  }
 });
 
 export default tables.reducer;

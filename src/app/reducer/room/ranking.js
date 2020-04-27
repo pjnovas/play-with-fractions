@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const ranking = createSlice({
-  name: 'ranking',
+  name: 'room/ranking',
   initialState: [],
   reducers: {}
 });
