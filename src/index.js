@@ -6,16 +6,20 @@ import createStore from './createStore';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 
-const store = createStore();
+const { store, firstRoute } = createStore();
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const render = () => {
+  ReactDOM.render(
+    <React.StrictMode>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </React.StrictMode>,
+    document.getElementById('root')
+  );
+};
+
+store.dispatch(firstRoute()).then(() => render());
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -23,8 +23,8 @@ const createWebSocketsChannel = socket =>
 
 const socketSender = function* (socket) {
   while (true) {
-    const action = yield take(`SEND:${socket.id}`);
-    socket.send(JSON.stringify(action));
+    const action = yield take(`WS:SEND:${socket.id}`);
+    socket.send(JSON.stringify(action.payload));
   }
 };
 

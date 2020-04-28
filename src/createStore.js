@@ -1,23 +1,39 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
+import { createRouter } from '@respond-framework/rudy';
 
-// TODO: react features here
-// import counter from '../features/counter/counterSlice';
-
-import reducer from 'app/reducer';
+import reducer from './reducer';
+import routes from './routes';
 import effects from './effects';
 
 const sagaMiddleware = createSagaMiddleware();
 
-const middleware = [...getDefaultMiddleware({ thunk: false }), sagaMiddleware];
-
 export default () => {
+  const {
+    middleware: routerMiddleware,
+    reducer: location,
+    firstRoute
+  } = createRouter(routes);
+
+  const middleware = [
+    ...getDefaultMiddleware({
+      serializableCheck: false,
+      thunk: false
+    }),
+    routerMiddleware,
+    sagaMiddleware
+  ];
+
   const store = configureStore({
     devTools: true,
     middleware,
-    reducer
+    reducer: {
+      ...reducer,
+      location
+    }
   });
 
   sagaMiddleware.run(effects);
-  return store;
+
+  return { store, firstRoute };
 };

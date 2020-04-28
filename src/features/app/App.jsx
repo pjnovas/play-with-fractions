@@ -1,21 +1,12 @@
 import React from 'react';
-import Admin from '../admin';
-
-const qsToken = process.env.REACT_APP_QS_TOKEN;
-const qsRoomId = process.env.REACT_APP_QS_ROOM;
+import { useSelector } from 'react-redux';
+import { prop } from 'lodash/fp';
+import pages from './pages';
 
 const App = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-
-  if (urlParams.get(qsToken)) {
-    return <Admin roomId={urlParams.get(qsRoomId)} />;
-  }
-
-  if (urlParams.get(qsRoomId)) {
-    return <div>ROOM</div>;
-  }
-
-  return <div>UNAUTHORIZED</div>;
+  const page = useSelector(prop('page'));
+  const Component = pages[page];
+  return <Component />;
 };
 
 export default App;

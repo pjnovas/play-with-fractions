@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.1.0",
+    "@respond-framework/rudy": "^0.1.1-test.9",
     "lodash": "^4.17.15",
     "react": "^16.13.1",
     "react-copy-to-clipboard": "^5.0.2",

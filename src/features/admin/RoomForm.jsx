@@ -4,8 +4,6 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { create } from 'app/reducer/room/settings';
 
-import RoomLink from './RoomLink';
-
 const cards = [
   '1',
   '3/2',
@@ -132,7 +130,6 @@ const RoomForm = () => {
           </div>
           <textarea ref={register} name="cards" />
         </div>
-        <RoomLink />
         <div className={styles.footer}>
           <button type="submit">Crear</button>
         </div>

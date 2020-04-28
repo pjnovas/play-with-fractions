@@ -1,13 +1,18 @@
-import { fork, take, put, call } from 'redux-saga/effects';
+import {
+  fork,
+  take,
+  put,
+  call,
+  select,
+  takeEvery,
+  all
+} from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
+import { prop } from 'lodash/fp';
 
-const wsURL = process.env.REACT_APP_WS_URL;
-
-const setStatus = payload => ({ type: 'SET_STATUS', payload });
-// const setMessage = payload => ({ type: 'SET_MESSAGE', payload });
-
-const createWebSocketConnection = () =>
-  new WebSocket(`${wsURL}${window.location.search}`);
+import { connect, setStatus, getWSUrl, isOnline } from 'reducer/websocket';
+import { replace } from 'app/reducer/room/settings';
+import { types as Routes } from 'routes';
 
 const createWebSocketsChannel = socket =>
   eventChannel(emit => {
@@ -52,7 +57,48 @@ const handleIO = function* (socket) {
   yield fork(sender, socket);
 };
 
+const connectWS = function* () {
+  if (yield select(isOnline)) return; // already connected
+
+  const wsURL = yield select(getWSUrl);
+  yield fork(handleIO, new WebSocket(wsURL));
+};
+
+const onOpenRoomAdmin = function* (action) {
+  if (!(yield select(isOnline))) {
+    yield fork(connectWS);
+    yield take(setStatus('OPEN').type);
+  }
+
+  console.log('onOpenRoomAdmin: ready for getting the room');
+  // TODO: room is already since it's replied from connection
+};
+
+const onEnterPlay = function* (action) {
+  yield call(connectWS);
+  yield take(setStatus('OPEN'));
+
+  // TODO: start game
+};
+
+const onNewRoom = function* (action) {
+  const roomId = action.payload.id;
+  if (!roomId) return; // maybe a clean up
+
+  const page = yield select(prop('location.type'));
+  const token = yield select(prop('location.params.token'));
+
+  if (page === Routes.ADMIN) {
+    yield put({ type: Routes.ADMIN_ROOM, params: { token, roomId } });
+  }
+};
+
 export default function* () {
-  const socket = yield call(createWebSocketConnection);
-  yield fork(handleIO, socket);
+  yield all([
+    takeEvery(connect.type, connectWS),
+    takeEvery(Routes.ADMIN, connectWS),
+    takeEvery(Routes.ADMIN_ROOM, onOpenRoomAdmin),
+    takeEvery(Routes.PLAY, onEnterPlay),
+    takeEvery(replace.type, onNewRoom)
+  ]);
 }
