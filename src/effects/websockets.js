@@ -11,12 +11,23 @@ import { eventChannel } from 'redux-saga';
 import { prop } from 'lodash/fp';
 
 import { connect, setStatus, getWSUrl, isOnline } from 'reducer/websocket';
-import { replace } from 'app/reducer/room/settings';
+import { replace, fetch } from 'app/reducer/room/settings';
 import { types as Routes } from 'routes';
+
+// const pingTime = process.env.REACT_APP_PING_TIME || 30000;
+// const latency = process.env.REACT_APP_LATENCY || 1000;
 
 const createWebSocketsChannel = socket =>
   eventChannel(emit => {
-    socket.addEventListener('open', event => {
+    // const heartbeat = function () {
+    //   clearTimeout(this.pingTimeout);
+    //   this.pingTimeout = setTimeout(() => {
+    //     // this.terminate();
+    //     console.log('terminate me!');
+    //   }, pingTime + latency);
+    // };
+
+    socket.addEventListener('open', () => {
       emit(setStatus('OPEN'));
     });
 
@@ -26,6 +37,7 @@ const createWebSocketsChannel = socket =>
     });
 
     socket.addEventListener('close', event => {
+      // clearTimeout(this.pingTimeout);
       emit(setStatus('CLOSED'));
     });
 
@@ -33,7 +45,10 @@ const createWebSocketsChannel = socket =>
       emit(JSON.parse(event.data));
     });
 
-    return socket.close;
+    // socket.addEventListener('open', heartbeat);
+    // socket.addEventListener('ping', heartbeat);
+
+    return () => socket.close();
   });
 
 const listener = function* (socket) {
@@ -70,8 +85,18 @@ const onOpenRoomAdmin = function* (action) {
     yield take(setStatus('OPEN').type);
   }
 
+  const roomId = yield select(prop('room.settings.id'));
+  if (!roomId) {
+    yield put({
+      type: 'WS:SEND',
+      payload: fetch()
+    });
+
+    yield take(replace.type); // wait for room
+  }
+
   console.log('onOpenRoomAdmin: ready for getting the room');
-  // TODO: room is already since it's replied from connection
+  // TODO: room is ready since it's replied from connection
 };
 
 const onEnterPlay = function* (action) {

@@ -5,11 +5,9 @@ import styles from './RoomLink.module.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { FaCopy } from 'react-icons/fa';
 
-const qsRoomId = process.env.REACT_APP_QS_ROOM;
-
 const RoomLink = () => {
   const id = useSelector(prop('room.settings.id'));
-  const href = `${window.location.origin}?${qsRoomId}=${id}`;
+  const href = `${window.location.origin}/play/${id}`;
 
   if (!id) return null;
 

@@ -1,10 +1,13 @@
 import { eventChannel } from 'redux-saga';
 import shortid from 'shortid';
 import ServerActions from './actionTypes';
+import { noop } from 'lodash';
 
 const adminToken = process.env.ADMIN_TOKEN;
 const qsToken = process.env.REACT_APP_QS_TOKEN;
 const qsRoomId = process.env.REACT_APP_QS_ROOM;
+
+const pingTime = process.env.REACT_APP_PING_TIME || 30000;
 
 export default server =>
   eventChannel(emit => {
@@ -26,12 +29,38 @@ export default server =>
       }
 
       ws.id = shortid.generate();
+      ws.isAlive = true;
+      ws.on('pong', () => {
+        ws.isAlive = true;
+      });
+
       emit({ type: ServerActions.NewConnection, payload: { ws, ...data } });
     });
 
-    // TODO: destroy server, errors
+    const pingInterval = setInterval(() => {
+      server.clients.forEach(ws => {
+        if (ws.isAlive === false) {
+          emit({
+            type: ServerActions.TimeoutConnection,
+            payload: { id: ws.id }
+          });
+
+          return ws.terminate();
+        }
+
+        ws.isAlive = false;
+        ws.ping(noop);
+      });
+    }, pingTime);
+
+    server.on('close', function close() {
+      clearInterval(pingInterval);
+    });
+
+    // TODO: errors
 
     return () => {
-      console.log('CLOSE SERVER');
+      clearInterval(pingInterval);
+      server.close();
     };
   });

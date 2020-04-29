@@ -7,11 +7,13 @@ export const sockets = createSlice({
   reducers: {
     newConnection: (state, { payload }) => {
       state.push(payload);
-    }
+    },
+    removeClient: (state, { payload }) =>
+      state.filter(({ id }) => id !== payload.id)
   }
 });
 
-export const { newConnection } = sockets.actions;
+export const { newConnection, removeClient } = sockets.actions;
 
 // Selectors
 

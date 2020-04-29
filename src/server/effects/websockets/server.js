@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 import { take, fork, put, call } from 'redux-saga/effects';
 
-import { newConnection } from 'server/reducer/sockets';
+import { newConnection, removeClient } from 'server/reducer/sockets';
 
 import socketEffects from './socket';
 import createWebServerChannel from './serverChannel';
@@ -24,6 +24,10 @@ const serverListener = function* (server) {
         case ServerActions.NewConnection: {
           const { ws, ...data } = payload;
           yield put(newConnection({ id: ws.id, ...data }));
+          break;
+        }
+        case ServerActions.TimeoutConnection: {
+          yield put(removeClient({ id: payload.id }));
           break;
         }
         default:

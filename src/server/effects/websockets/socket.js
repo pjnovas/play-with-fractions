@@ -1,8 +1,10 @@
 import { select, take, fork, put, call } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import { getAdminIds } from 'server/reducer/sockets';
-
 import { create } from 'app/reducer/room/settings';
+import ServerActions from './actionTypes';
+import { removeClient } from 'server/reducer/sockets';
+
 const adminActions = [create.type];
 
 const createWebSocketsChannel = socket =>
@@ -15,8 +17,14 @@ const createWebSocketsChannel = socket =>
       }
     });
 
+    socket.on('close', function () {
+      emit({
+        type: ServerActions.TimeoutConnection,
+        payload: { id: this.id }
+      });
+    });
+
     return () => {
-      console.log('CLOSE SOCKET', socket.id);
       socket.close();
     };
   });
@@ -35,6 +43,11 @@ const socketListener = function* (socket) {
     try {
       const action = yield take(channel);
 
+      if (action.type === ServerActions.TimeoutConnection) {
+        yield put(removeClient({ id: action.payload.id }));
+        return;
+      }
+
       if (adminActions.includes(action.type)) {
         const adminIds = yield select(getAdminIds);
         if (!adminIds.includes(socket.id)) {
@@ -43,7 +56,7 @@ const socketListener = function* (socket) {
         }
       }
 
-      yield put(action);
+      yield put({ ...action, meta: { ...action.meta, sid: socket.id } });
     } catch (e) {
       console.log('Websocket Err: ', e);
     }

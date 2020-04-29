@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import shortid from 'shortid';
+import { identity } from 'lodash';
 
 export const settings = createSlice({
   name: 'room/settings',
@@ -15,11 +16,12 @@ export const settings = createSlice({
       id: shortid.generate(),
       ...payload
     }),
-    replace: (state, { payload }) => payload
+    replace: (state, { payload }) => payload,
+    fetch: identity
   }
 });
 
-export const { create, replace } = settings.actions;
+export const { create, replace, fetch } = settings.actions;
 
 export const notFound = id => ({
   type: `${settings.name}/notFound`,

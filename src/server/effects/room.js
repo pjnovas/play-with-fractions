@@ -1,5 +1,5 @@
 import { prop } from 'lodash/fp';
-import { all, takeEvery, select, put } from 'redux-saga/effects';
+import { all, takeEvery, select, put, call } from 'redux-saga/effects';
 
 import { newConnection } from 'server/reducer/sockets';
 import * as rooms from 'app/reducer/room/settings';
@@ -13,6 +13,13 @@ const createRoom = function* () {
   });
 };
 
+const sendRoomSettings = function* ({ meta }) {
+  const room = yield select(prop('room.settings'));
+  const type = `WS:SEND:${meta.sid}`;
+
+  yield put({ type, payload: rooms.replace(room) });
+};
+
 const resolveConn = function* ({ payload }) {
   const room = yield select(prop('room.settings'));
   const type = `WS:SEND:${payload.id}`;
@@ -23,7 +30,7 @@ const resolveConn = function* ({ payload }) {
   }
 
   if (payload.isAdmin && payload.roomId) {
-    yield put({ type, payload: rooms.replace(room) });
+    yield call(sendRoomSettings, { meta: { sid: payload.id } });
   }
 
   // TODO: else: player joined!
@@ -32,6 +39,7 @@ const resolveConn = function* ({ payload }) {
 export default function* () {
   yield all([
     takeEvery(rooms.create.type, createRoom),
-    takeEvery(newConnection.type, resolveConn)
+    takeEvery(newConnection.type, resolveConn),
+    takeEvery(rooms.fetch.type, sendRoomSettings)
   ]);
 }

@@ -5,6 +5,11 @@
   position: relative;
   color: #062d40;
   font-weight: bold;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px auto;
 }
 
 .RoomLink h4 {
