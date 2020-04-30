@@ -36,6 +36,7 @@ export const tables = createSlice({
       cards: [],
       tables: payload.tables.map(createTable)
     }),
+    replace: (state, { payload }) => ({ ...state, payload }),
     deal: (state, { payload }) => ({
       ...state,
       status: Status.WaitingPicks,
@@ -61,6 +62,6 @@ export const tables = createSlice({
   }
 });
 
-export const { create, deal, pick, round, ended } = tables.actions;
+export const { create, replace, deal, pick, round, ended } = tables.actions;
 
 export default tables.reducer;
