@@ -4,7 +4,7 @@ const components = {
   [Routes.HOME]: 'Home',
   [Routes.ADMIN]: 'Admin',
   [Routes.ADMIN_ROOM]: 'AdminRoom',
-  [Routes.PLAY]: 'RoomTable',
+  [Routes.PLAY]: 'Play',
   [Routes.NOT_FOUND]: 'NotFound'
 };
 

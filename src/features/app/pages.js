@@ -2,7 +2,7 @@ import React from 'react';
 
 import Admin from 'features/admin/RoomForm';
 import AdminRoom from 'features/admin/Room';
-import RoomTable from 'features/room/Room';
+import Play from 'features/play';
 
 import { useSelector } from 'react-redux';
 import { prop } from 'lodash/fp';
@@ -27,6 +27,6 @@ export default {
   Home,
   Admin,
   AdminRoom,
-  RoomTable,
+  Play,
   NotFound
 };

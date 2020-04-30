@@ -1,0 +1,79 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content h2 {
+  display: flex;
+  font-size: 3em;
+  margin: 0;
+}
+
+.content h2 div {
+  margin-left: 1em;
+}
+
+.content h3 {
+  display: flex;
+  justify-content: space-evenly;
+  text-align: center;
+  font-size: 1.6em;
+  margin: 0;
+}
+
+.content > form {
+  width: 100%;
+  max-width: 500px;
+  background: #0d394e;
+  padding: 1em;
+  border-radius: 4px;
+}
+
+.content > form > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1em;
+}
+
+.content input {
+  width: 300px;
+}
+
+.content .helpTables {
+  justify-content: flex-end;
+  border-bottom: 2px solid #d6e0e4;
+}
+
+
+.content input, 
+.content textarea {
+  border: none;
+  padding: 0 0.6em;
+  border-radius: 4px;
+  font-size: 1em;
+  background: #d6e0e4;
+}
+
+.content input[type=number] {
+  text-align: right;
+}
+
+.content textarea {
+  width: 60px;
+  height: 260px;
+  resize: none;
+  text-align: right;
+}
+
+.content .footer {
+  margin-top: 2em;
+  justify-content: center;
+}
+
+.content button {
+  border: 3px solid #000000;
+  background: #ffc83d;
+  color: #000000;
+}
