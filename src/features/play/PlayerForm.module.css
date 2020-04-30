@@ -35,10 +35,23 @@
   justify-content: space-between;
   align-items: center;
   margin: 1em;
+  flex-wrap: wrap;
 }
 
 .content input {
   width: 300px;
+}
+
+.content .error {
+  color: #F44336;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.content .error div {
+  margin-right: 1em;
 }
 
 .content .helpTables {

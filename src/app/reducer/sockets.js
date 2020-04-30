@@ -5,6 +5,7 @@ export const sockets = createSlice({
   name: 'sockets',
   initialState: [],
   reducers: {
+    replace: (state, { payload }) => payload,
     newConnection: (state, { payload }) => {
       state.push(payload);
     },
@@ -13,7 +14,7 @@ export const sockets = createSlice({
   }
 });
 
-export const { newConnection, removeClient } = sockets.actions;
+export const { newConnection, removeClient, replace } = sockets.actions;
 
 // Selectors
 

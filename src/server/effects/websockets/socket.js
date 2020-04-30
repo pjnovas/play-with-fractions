@@ -1,9 +1,9 @@
 import { select, take, fork, put, call } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
-import { getAdminIds } from 'server/reducer/sockets';
+import { getAdminIds } from 'app/reducer/sockets';
 import { create } from 'app/reducer/room/settings';
 import ServerActions from './actionTypes';
-import { removeClient } from 'server/reducer/sockets';
+import { removeClient } from 'app/reducer/sockets';
 
 const adminActions = [create.type];
 

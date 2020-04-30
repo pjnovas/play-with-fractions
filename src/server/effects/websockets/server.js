@@ -1,11 +1,12 @@
 import WebSocket from 'ws';
 import { take, fork, put, call } from 'redux-saga/effects';
 
-import { newConnection, removeClient } from 'server/reducer/sockets';
+import { newConnection, removeClient } from 'app/reducer/sockets';
 
 import socketEffects from './socket';
 import createWebServerChannel from './serverChannel';
 import broadcaster from './broadcaster';
+import notifier from './notifier';
 import ServerActions from './actionTypes';
 
 const port = process.env.WSS_PORT;
@@ -51,4 +52,5 @@ export default function* () {
   const server = yield call(createWebSocketServer);
   yield fork(serverListener, server);
   yield fork(broadcaster, server);
+  yield fork(notifier);
 }

@@ -1,6 +1,6 @@
 import WebSocket from 'ws';
 import { take, fork, select } from 'redux-saga/effects';
-import { getTableIds, getRoomIds, getAdminIds } from 'server/reducer/sockets';
+import { getTableIds, getRoomIds, getAdminIds } from 'app/reducer/sockets';
 
 const broadcastToIds = (server, ids, action) => {
   server.clients.forEach(ws => {

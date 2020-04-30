@@ -1,8 +1,9 @@
 import { prop } from 'lodash/fp';
 import { all, takeEvery, select, put, call } from 'redux-saga/effects';
 
-import { newConnection } from 'server/reducer/sockets';
+import { newConnection, removeClient, replace } from 'app/reducer/sockets';
 import * as rooms from 'app/reducer/room/settings';
+import * as players from 'app/reducer/room/players';
 
 const createRoom = function* () {
   const room = yield select(prop('room.settings'));
@@ -13,14 +14,20 @@ const createRoom = function* () {
   });
 };
 
-const sendRoomSettings = function* ({ meta }) {
-  const room = yield select(prop('room.settings'));
+const sendCurrentRoomData = function* ({ meta }) {
   const type = `WS:SEND:${meta.sid}`;
 
-  yield put({ type, payload: rooms.replace(room) });
+  const sockets = yield select(prop('sockets'));
+  const settings = yield select(prop('room.settings'));
+  const playerList = yield select(prop('room.players'));
+
+  yield put({ type, payload: rooms.replace(settings) });
+  yield put({ type, payload: replace(sockets) });
+  yield put({ type, payload: players.replace(playerList) });
 };
 
-const resolveConn = function* ({ payload }) {
+const resolveConn = function* (action) {
+  const { payload } = action;
   const room = yield select(prop('room.settings'));
   const type = `WS:SEND:${payload.id}`;
 
@@ -30,16 +37,21 @@ const resolveConn = function* ({ payload }) {
   }
 
   if (payload.isAdmin && payload.roomId) {
-    yield call(sendRoomSettings, { meta: { sid: payload.id } });
+    yield call(sendCurrentRoomData, { meta: { sid: payload.id } });
   }
 
   // TODO: else: player joined!
+};
+
+const onRemoveClient = function* (action) {
+  yield put(players.disconnect(action.payload));
 };
 
 export default function* () {
   yield all([
     takeEvery(rooms.create.type, createRoom),
     takeEvery(newConnection.type, resolveConn),
-    takeEvery(rooms.fetch.type, sendRoomSettings)
+    takeEvery(removeClient.type, onRemoveClient),
+    takeEvery(rooms.fetch.type, sendCurrentRoomData)
   ]);
 }
