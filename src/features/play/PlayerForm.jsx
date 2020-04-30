@@ -39,7 +39,7 @@ const PlayerForm = () => {
   return (
     <div className={styles.content}>
       <h2>
-        Hola! <Emoji text="🖐" className="animated infinite wobble" />
+        <Emoji text="🖐" className="animated infinite wobble" /> Hola!
       </h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <h3>
