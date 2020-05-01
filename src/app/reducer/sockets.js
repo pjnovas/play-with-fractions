@@ -24,12 +24,6 @@ const reduceById = (key, value) => (all, socket) =>
 export const getRoomIds = roomId =>
   createSelector(prop(sockets.name), reduce(reduceById('roomId', roomId), []));
 
-export const getTableIds = tableId =>
-  createSelector(
-    prop(sockets.name),
-    reduce(reduceById('tableId', tableId), [])
-  );
-
 export const getAdminIds = createSelector(
   prop(sockets.name),
   reduce(reduceById('isAdmin', true), [])

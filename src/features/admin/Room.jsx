@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './Room.module.css';
-import { flatten, isEmpty } from 'lodash';
+import { flatten, isEmpty, noop } from 'lodash';
 import { propOr } from 'lodash/fp';
 import { /*useDispatch, */ useSelector } from 'react-redux';
 import RoomLink from './RoomLink';
@@ -22,6 +22,14 @@ const Room = () => {
     0
   );
 
+  const onlinePlayers = players.filter(({ sockets }) => !isEmpty(sockets));
+  const offlinePlayers = players.filter(({ sockets }) => isEmpty(sockets));
+  const isReady = onlinePlayers.length === settings.maxPlayers;
+
+  const startGame = () => {
+    console.log('game started!');
+  };
+
   return (
     <div className={styles.content}>
       {!settings?.id ? (
@@ -30,23 +38,58 @@ const Room = () => {
         <>
           <RoomLink />
           <h1>Partida {settings.name}</h1>
-          <div>
-            <label>Administradores: </label>
-            <span>{admins}</span>
-            <br />
-            <label>Por ingresar: </label>
-            <span>{emptySockets}</span>
+          <div className={styles.header}>
+            <div>
+              <div title="Usuarios que están viendo esta página">
+                <label>Administradores: </label>
+                <span>{admins}</span>
+              </div>
+              <div title="Jugadores que están llenando el formulario de ingreso">
+                <label>Por ingresar: </label>
+                <span>{emptySockets}</span>
+              </div>
+            </div>
+            <button
+              className={`${
+                isReady ? 'animated infinite pulse' : styles.disabled
+              }`}
+              title={`${
+                isReady ? '' : 'Aún no están todos los jugadores online'
+              }`}
+              onClick={isReady ? startGame : noop}
+            >
+              Iniciar Partida
+            </button>
           </div>
-          <h2>
-            Jugadores en Lobby ( {players.length} / {settings.maxPlayers} )
+          <h2 title="Jugadores conectados (llenando o no el formulario) sobre los esperados para iniciar la partida">
+            Jugadores en espera ( {players.length} / {settings.maxPlayers} )
           </h2>
-          <ul>
-            {players.map(player => (
-              <li>{`${player.nickname} <${player.email}> ${
-                isEmpty(player.sockets) ? 'Offline' : ''
-              }`}</li>
-            ))}
-          </ul>
+          <div className={styles.playerLists}>
+            <div>
+              <h3 title="Jugadores que llenaron el formulario de ingreso y están en la página de espera">
+                Online ( {onlinePlayers.length} / {settings.maxPlayers} )
+              </h3>
+              <ul className={styles.players}>
+                {onlinePlayers.map(player => (
+                  <li
+                    key={player.email}
+                  >{`${player.nickname} <${player.email}>`}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 title="Jugadores que ya ingresaron el formulario en esta partida pero cerraron la página (tienen que volver a ingresar el formulario con el MISMO EMAIL)">
+                Offline ( {offlinePlayers.length} / {settings.maxPlayers} )
+              </h3>
+              <ul className={styles.players}>
+                {offlinePlayers.map(player => (
+                  <li
+                    key={player.email}
+                  >{`${player.nickname} <${player.email}>`}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </>
       )}
     </div>

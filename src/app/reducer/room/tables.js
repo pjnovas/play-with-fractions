@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { take, drop, identity, mapValues } from 'lodash';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { take, drop, identity, mapValues, keyBy } from 'lodash';
+import { prop } from 'lodash/fp';
 import shortid from 'shortid';
 
 export const Status = {
@@ -31,6 +32,7 @@ export const tables = createSlice({
     tables: []
   },
   reducers: {
+    start: identity,
     create: (state, { payload }) => ({
       deck: payload.deck,
       cards: [],
@@ -62,6 +64,31 @@ export const tables = createSlice({
   }
 });
 
-export const { create, replace, deal, pick, round, ended } = tables.actions;
+export const {
+  start,
+  create,
+  replace,
+  deal,
+  pick,
+  round,
+  ended
+} = tables.actions;
+
+// Selectors
+
+export const getSocketIdsByTableId = createSelector(
+  prop('room.players'),
+  prop('room.tables.tables'),
+  (players, tables) =>
+    mapValues(keyBy(tables, 'id'), table =>
+      table.players.reduce(
+        (sockets, { email }) => [
+          ...sockets,
+          ...(players.find(pl => pl.email === email).sockets || [])
+        ],
+        []
+      )
+    )
+);
 
 export default tables.reducer;

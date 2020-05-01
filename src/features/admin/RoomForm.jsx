@@ -2,7 +2,10 @@ import React from 'react';
 import styles from './RoomForm.module.css';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { compact } from 'lodash';
+
 import { create } from 'app/reducer/room/settings';
+import { getTablesConfig } from 'app/utils/room';
 
 const cards = [
   '1',
@@ -41,29 +44,28 @@ const getHelpTable = (maxPlayers, maxPerTable) => {
     return 'La cantidad de jugadores debe ser mayor a la cantidad por mesa';
   }
 
-  const mod = maxPlayers % maxPerTable;
-  const div = maxPlayers / maxPerTable;
-
-  const rest = mod === 0 ? '' : `y una mesa de ${mod}`;
-  return `Serán ${Math.floor(div)} Mesas de ${maxPerTable} jugadores ${rest}`;
+  const { tables, plus } = getTablesConfig(maxPlayers, maxPerTable);
+  const rest = plus === 0 ? '' : `y una mesa de ${plus}`;
+  return `Serán ${tables} Mesas de ${maxPerTable} jugadores ${rest}`;
 };
 
-const getHelpCards = (cards, maxPerTable) => {
-  if (maxPerTable > cards) {
+const getHelpCards = (cards, cardsPerRound) => {
+  if (cardsPerRound > cards) {
     return 'Cantidad de cartas insuficientes';
   }
 
   return `Serán ${
-    cards / maxPerTable
-  } rondas con selección entre ${maxPerTable} cartas por ronda`;
+    cards / cardsPerRound
+  } rondas con selección entre ${cardsPerRound} cartas por ronda`;
 };
 
 const RoomForm = () => {
   const dispatch = useDispatch();
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
-      maxPlayers: 24,
+      maxPlayers: 5, // 24,
       maxPerTable: 3,
+      cardsPerRound: 3,
       cards: cards.join('\n')
     }
   });
@@ -75,14 +77,16 @@ const RoomForm = () => {
         ...room,
         maxPlayers: Number(room.maxPlayers),
         maxPerTable: Number(room.maxPerTable),
-        cards: room.cards.split('\n')
+        cardsPerRound: Number(room.cardsPerRound),
+        cards: compact(room.cards.split('\n'))
       })
     });
   };
 
   const maxPlayers = Number(watch('maxPlayers'));
   const maxPerTable = Number(watch('maxPerTable'));
-  const currentCards = watch('cards').split('\n');
+  const cardsPerRound = Number(watch('cardsPerRound'));
+  const currentCards = compact(watch('cards').split('\n'));
 
   return (
     <div className={styles.content}>
@@ -112,6 +116,16 @@ const RoomForm = () => {
             max="10"
           />
         </div>
+        <div>
+          <label>Cartas por ronda</label>
+          <input
+            ref={register}
+            name="cardsPerRound"
+            type="number"
+            min="2"
+            max="5"
+          />
+        </div>
         <div className={styles.helpTables}>
           <label>{getHelpTable(maxPlayers, maxPerTable)}</label>
         </div>
@@ -126,7 +140,7 @@ const RoomForm = () => {
                 ></li>
               ))}
             </ul>
-            <span>{getHelpCards(currentCards.length, maxPerTable)}</span>
+            <span>{getHelpCards(currentCards.length, cardsPerRound)}</span>
           </div>
           <textarea ref={register} name="cards" />
         </div>

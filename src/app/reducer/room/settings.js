@@ -9,7 +9,8 @@ export const settings = createSlice({
     name: '',
     cards: [],
     maxPlayers: 20,
-    maxPerTable: 4
+    maxPerTable: 4,
+    cardsPerRound: 3
   },
   reducers: {
     create: (state, { payload }) => ({

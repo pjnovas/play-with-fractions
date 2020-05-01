@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 import { take, fork, select } from 'redux-saga/effects';
-import { getTableIds, getRoomIds, getAdminIds } from 'app/reducer/sockets';
+import { getRoomIds, getAdminIds } from 'app/reducer/sockets';
+import { getSocketIdsByTableId } from 'app/reducer/room/tables';
 
 const broadcastToIds = (server, ids, action) => {
   server.clients.forEach(ws => {
@@ -21,8 +22,8 @@ const roomBroadcaster = function* (server) {
 const tableBroadcaster = function* (server) {
   while (true) {
     const { meta, payload } = yield take('WS:BROADCAST:TABLE');
-    const ids = yield select(getTableIds(meta.tableId));
-    broadcastToIds(server, ids, payload);
+    const socketsByTableId = yield select(getSocketIdsByTableId);
+    broadcastToIds(server, socketsByTableId[meta.id], payload);
   }
 };
 
