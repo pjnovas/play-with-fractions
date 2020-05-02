@@ -1,11 +1,11 @@
-import { shuffle, times, drop, arrayTake } from 'lodash';
+import { shuffle, times, drop, take as arrayTake } from 'lodash';
 import { prop, pick } from 'lodash/fp';
 import { all, takeEvery, select, put, delay } from 'redux-saga/effects';
 
 // import * as rooms from 'app/reducer/room/settings';
 // import * as players from 'app/reducer/room/players';
 import { start, create, replace, deal } from 'app/reducer/room/tables';
-import tableClient from 'app/reducer/room/table';
+import * as tableClient from 'app/reducer/room/table';
 import { getTablesConfig } from 'app/utils/room';
 
 const playerFields = ['email', 'nickname'];
@@ -55,7 +55,7 @@ const startGame = function* () {
   const timeout = 5000; // startup time
 
   yield all(
-    allTables.map(({ id, players, status, points, cards }) =>
+    allTables.tables.map(({ id, players, status, points, cards }) =>
       put({
         type: 'WS:BROADCAST:TABLE',
         meta: { id },

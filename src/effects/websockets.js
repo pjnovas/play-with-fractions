@@ -95,15 +95,12 @@ const onOpenRoomAdmin = function* (action) {
     yield take(replace.type); // wait for room
   }
 
-  console.log('onOpenRoomAdmin: ready for getting the room');
-  // TODO: room is ready since it's replied from connection
+  // room is ready since it's replied from connection
 };
 
 const onEnterPlay = function* (action) {
   yield call(connectWS);
   yield take(setStatus('OPEN'));
-
-  // TODO: start game
 };
 
 const onNewRoom = function* (action) {

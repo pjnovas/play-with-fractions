@@ -16,7 +16,10 @@ export const table = createSlice({
     pick: '' // card
   },
   reducers: {
-    replace: (state, action) => action.payload,
+    replace: (state, action) => ({
+      ...state,
+      ...action.payload
+    }),
     deal: (state, action) => ({
       ...state,
       ...action.payload

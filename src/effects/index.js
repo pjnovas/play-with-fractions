@@ -1,6 +1,7 @@
-import { fork } from 'redux-saga/effects';
+import { all } from 'redux-saga/effects';
 import websockets from './websockets';
+import gameplay from './gameplay';
 
 export default function* () {
-  yield fork(websockets);
+  yield all([websockets(), gameplay()]);
 }

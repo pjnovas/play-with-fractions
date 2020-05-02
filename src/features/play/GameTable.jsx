@@ -5,10 +5,14 @@ import { useSelector } from 'react-redux';
 // import Emoji from 'components/Emoji';
 
 const GameTable = () => {
-  const { player } = useSelector(prop('player'));
+  const player = useSelector(prop('player'));
   const table = useSelector(prop('table'));
 
-  return <div className={styles.table}>{player.nickname}</div>;
+  return (
+    <div className={styles.table}>
+      {table.id} - {player.nickname}
+    </div>
+  );
 };
 
 export default GameTable;

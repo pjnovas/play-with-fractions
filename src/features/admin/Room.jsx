@@ -2,11 +2,12 @@ import React from 'react';
 import styles from './Room.module.css';
 import { flatten, isEmpty, noop } from 'lodash';
 import { propOr } from 'lodash/fp';
-import { /*useDispatch, */ useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { start } from 'app/reducer/room/tables';
 import RoomLink from './RoomLink';
 
 const Room = () => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const settings = useSelector(propOr([], 'room.settings'));
   const players = useSelector(propOr([], 'room.players'));
   const sockets = useSelector(propOr([], 'sockets'));
@@ -26,9 +27,7 @@ const Room = () => {
   const offlinePlayers = players.filter(({ sockets }) => isEmpty(sockets));
   const isReady = onlinePlayers.length === settings.maxPlayers;
 
-  const startGame = () => {
-    console.log('game started!');
-  };
+  const startGame = () => dispatch({ type: 'WS:SEND', payload: start() });
 
   return (
     <div className={styles.content}>
