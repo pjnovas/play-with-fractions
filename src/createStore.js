@@ -8,7 +8,7 @@ import effects from './effects';
 
 const sagaMiddleware = createSagaMiddleware();
 
-export default () => {
+export default preloadedState => {
   const {
     middleware: routerMiddleware,
     reducer: location,
@@ -26,6 +26,7 @@ export default () => {
 
   const store = configureStore({
     devTools: true,
+    preloadedState,
     middleware,
     reducer: {
       ...reducer,

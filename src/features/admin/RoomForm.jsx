@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { compact } from 'lodash';
 
 import { create } from 'app/reducer/room/settings';
-import { getTablesConfig } from 'app/utils/room';
+import { getTablesConfig, getFraction } from 'app/utils/room';
 
 const cards = [
   '1',
@@ -33,11 +33,6 @@ const cards = [
   '6/10',
   '6/12'
 ];
-
-const getFraction = number =>
-  number.includes('/')
-    ? `${number.split('/')[0]}&frasl;${number.split('/')[1]}`
-    : number;
 
 const getHelpTable = (maxPlayers, maxPerTable) => {
   if (maxPerTable > maxPlayers) {

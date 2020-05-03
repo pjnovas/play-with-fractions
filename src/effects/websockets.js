@@ -100,7 +100,7 @@ const onOpenRoomAdmin = function* (action) {
 
 const onEnterPlay = function* (action) {
   yield call(connectWS);
-  yield take(setStatus('OPEN'));
+  yield take(setStatus('OPEN').type);
 };
 
 const onNewRoom = function* (action) {

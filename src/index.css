@@ -8,6 +8,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: #062d40;
   color: #d7dde0;
+  line-height: 1;
 }
 
 input, textarea {
