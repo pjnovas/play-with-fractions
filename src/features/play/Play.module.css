@@ -9,8 +9,10 @@
 
 .animRotate {
   animation: spin 1.5s infinite linear;
-  font-size: 4em;
-  height: 1.67em;
+  font-size: 4rem;
+  height: 2.6rem;
+  padding: 0.5em 0;
+  margin-top: -0.5em;
 }
 
 @keyframes spin {

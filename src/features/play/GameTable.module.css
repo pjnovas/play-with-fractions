@@ -69,7 +69,7 @@
   padding: 4em 0 4em 0;
   background: #022638;
   position: relative;
-  margin-bottom: 3.5em;
+  margin-bottom: 2.5em;
 }
 
 .cards .promp {
@@ -110,15 +110,20 @@
 
 .card {
   display: flex;
-  width: 160px;
-  height: 200px;
   background: white;
   border-radius: 6px;
   position: relative;
   cursor: pointer;
   top: 0;
-  margin: 1rem 0;
+  margin: 1rem 0.2rem;
   transition: top 0.5s ease-in-out, opacity 0.5s ease-in-out;
+
+  width: 20vw;
+  height: 25vw;
+  min-width: 110px;
+  min-height: 140px;
+  max-width: 160px;
+  max-height: 200px;
 }
 
 .card:hover,
@@ -155,7 +160,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 8em;
+  font-size: 7rem;
   font-weight: bold;
   padding-top: 0.2em;
 }

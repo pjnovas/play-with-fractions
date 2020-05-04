@@ -43,7 +43,7 @@ const PlayerForm = () => {
       </h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <h3>
-          Ingresá tus datos para jugar{' '}
+          Ingresá tus datos{' '}
           <Emoji text="👇" className="animated infinite bounce" />
         </h3>
         <div>
