@@ -101,7 +101,7 @@ const Cards = () => {
 
   return (
     <div className={styles.cards}>
-      <div className={styles.promp}>Cuál es la carta mas alta?</div>
+      <div className={styles.promp}>Cuál es la fracción mayor?</div>
       {cards.map((card, i) => (
         <div
           key={card}
