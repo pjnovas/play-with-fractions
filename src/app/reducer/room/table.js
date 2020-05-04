@@ -20,19 +20,12 @@ export const table = createSlice({
       ...state,
       ...action.payload
     }),
-    deal: (state, action) => ({
-      ...state,
-      ...action.payload
-    }),
     tick: (state, action) => {
-      state.timeout = action.payload;
+      state.timeout -= 1000;
+      if (state.timeout < 0) state.timeout = 0;
     },
     pick: (state, action) => {
       state.pick = action.payload;
-    },
-    round: (state, action) => {
-      // action.payload.asserted
-      state.points = action.payload.points;
     },
     ended: identity
   }

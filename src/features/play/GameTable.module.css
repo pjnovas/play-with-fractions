@@ -33,7 +33,7 @@
 
 .player .nickname {
   font-size: 1.2em;
-  padding: 0.7em 0.5em 0.3em 1.5em;
+  padding: 0.7em 0.5em 0.3em 1.7em;
   background-color: #0c5f8a;
   border-radius: 4px;
   margin: 0 2em 0 1.1em;
@@ -41,6 +41,7 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  border: 3px solid #0c5f8a;
 }
 
 .player .points {
@@ -56,6 +57,15 @@
   width: 2rem;
   text-align: center;
   height: 2.4rem;
+  border: 3px solid #134863;
+}
+
+.player.me .nickname,
+.player.me .points {
+  border: 3px solid black;
+  font-weight: bold;
+  color: #000;
+  background-color: #d8a421;
 }
 
 .player .emoji {
@@ -137,6 +147,15 @@
   box-shadow: none;
   top: 0;
   opacity: 0.5;
+}
+
+.card.correct {
+  box-shadow: 0 0 50px rgb(0, 255, 0);
+  opacity: 1;
+}
+
+.card.selected.incorrect {
+  box-shadow: 0 0 50px rgb(255, 0, 0);
 }
 
 .card::before {

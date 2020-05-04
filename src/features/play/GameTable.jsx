@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import styles from './GameTable.module.css';
-import { noop, shuffle, take, random } from 'lodash';
+import { noop, shuffle, take } from 'lodash';
 import { prop } from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { getFraction } from 'app/utils/room';
@@ -43,8 +43,8 @@ const PlayerReaction = ({ state }) => {
   }
 };
 
-const PlayerBadge = ({ nickname, points, state }) => (
-  <div className={styles.player}>
+const PlayerBadge = ({ me, nickname, points, state }) => (
+  <div className={[styles.player, me ? styles.me : ''].join(' ')}>
     <div className={styles.points}>{points}</div>
     <div className={styles.nickname}>{nickname}</div>
     <PlayerReaction state={state} />
@@ -52,22 +52,34 @@ const PlayerBadge = ({ nickname, points, state }) => (
 );
 
 const PlayerList = ({ side }) => {
+  const me = useSelector(prop('player'));
   const { players, points } = useSelector(prop('table'));
 
   return (
     <div className={[styles.players, styles[side]].join(' ')}>
       {players.map(({ email, ...player }) => (
-        <PlayerBadge key={email} {...player} points={points[email]} />
+        <PlayerBadge
+          key={email}
+          {...player}
+          me={me.email === email}
+          points={points[email] || 0}
+        />
       ))}
     </div>
   );
 };
 
 const Messages = () => {
-  const { pick } = useSelector(prop('table'));
+  const { pick, winCard } = useSelector(prop('table'));
   let msg = '';
 
-  if (!pick) {
+  if (winCard) {
+    if (winCard === pick) {
+      msg = 'Muy bien!';
+    } else {
+      msg = 'Ups!, esa no era';
+    }
+  } else if (!pick) {
     msg = 'Seleccioná una carta antes de que se termine el tiempo!';
   } else {
     msg = 'Bien!, ahora esperemos a los demás ...';
@@ -78,8 +90,8 @@ const Messages = () => {
 
 const Cards = () => {
   const dispatch = useDispatch();
-  const { cards, pick, timeout } = useSelector(prop('table'));
-  const colors = useRef(getRndColors(cards.length));
+  const { cards, pick, timeout, winCard } = useSelector(prop('table'));
+  const colors = useRef(getRndColors(3));
 
   const onPickCard = card => () => {
     const action = pickCard(card);
@@ -96,7 +108,12 @@ const Cards = () => {
           className={[
             styles.card,
             styles[colors.current[i]],
-            pick ? (pick === card ? styles.selected : styles.notSelected) : ''
+            pick ? (pick === card ? styles.selected : styles.notSelected) : '',
+            winCard
+              ? winCard === card
+                ? styles.correct
+                : styles.incorrect
+              : ''
           ].join(' ')}
           onClick={pick ? noop : onPickCard(card)}
         >
@@ -116,7 +133,6 @@ const Cards = () => {
   );
 };
 
-// const { nickname, email } = useSelector(prop('player'));
 const GameTable = () => (
   <div className={styles.content}>
     <Cards />

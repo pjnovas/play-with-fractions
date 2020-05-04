@@ -10,6 +10,9 @@ export const Status = {
   Ended: 'ENDED'
 };
 
+const waitTimeout = 5000;
+const roundTimeout = 15000;
+
 const createTable = ({ players }) => ({
   id: shortid.generate(),
   players,
@@ -27,13 +30,16 @@ export const tables = createSlice({
   name: 'room/tables',
   initialState: {
     status: Status.WaitingPlayers,
+    timeout: 0,
     deck: [],
     cards: [],
-    tables: []
+    tables: [],
+    winCard: ''
   },
   reducers: {
     start: identity,
     create: (state, { payload }) => ({
+      timeout: waitTimeout,
       deck: payload.deck,
       cards: [],
       tables: payload.tables.map(createTable)
@@ -41,21 +47,40 @@ export const tables = createSlice({
     replace: (state, { payload }) => ({ ...state, ...payload }),
     deal: (state, { payload }) => ({
       ...state,
+      timeout: roundTimeout,
       status: Status.WaitingPicks,
       deck: drop(state.deck, payload),
       cards: take(state.deck, payload),
-      tables: state.tables.map(table => ({ ...table, picks: {} }))
+      winCard: '',
+      tables: state.tables.map(table => ({
+        ...table,
+        picks: {},
+        players: table.players.map(player => ({ ...player, state: '' }))
+      }))
     }),
     pick: (state, { payload }) => {
       const table = state.tables.find(table => table.id === payload.id);
       if (!table) return state;
-      table.picks[payload.player] = payload.pick; // payload.player = email
+
+      const email = payload.player;
+      table.picks[email] = payload.pick;
+
+      const player = table.players.find(player => player.email === email);
+      player.state = 'pick';
     },
     round: (state, { payload }) => ({
+      ...state,
+      timeout: waitTimeout,
       status: Status.EndRound,
+      winCard: payload,
       tables: state.tables.map(table => ({
         ...table,
+        players: table.players.map(player => ({
+          ...player,
+          state: table.picks[player.email] === payload ? 'win' : 'loose'
+        })),
         points: mapValues(
+          table.points,
           (points, player) => points + (table.picks[player] === payload ? 1 : 0)
         )
       }))
@@ -88,6 +113,33 @@ export const getSocketIdsByTableId = createSelector(
         ],
         []
       )
+    )
+);
+
+export const getPlayersBySocketIds = createSelector(
+  prop('room.players'),
+  players =>
+    players.reduce(
+      (sockets, player) => ({
+        ...sockets,
+        ...player.sockets.reduce(
+          (obj, sid) => ({
+            ...obj,
+            [sid]: player
+          }),
+          {}
+        )
+      }),
+      {}
+    )
+);
+
+export const getTablesBySocketIds = createSelector(
+  getPlayersBySocketIds,
+  prop('room.tables.tables'),
+  (playerSockets, tables) =>
+    mapValues(playerSockets, ({ email }) =>
+      tables.find(table => table.players.some(player => player.email === email))
     )
 );
 
