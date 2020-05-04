@@ -45,11 +45,8 @@ const PlayerReaction = ({ state }) => {
 
 const PlayerBadge = ({ nickname, points, state }) => (
   <div className={styles.player}>
+    <div className={styles.points}>{points}</div>
     <div className={styles.nickname}>{nickname}</div>
-    <div className={styles.points}>
-      {points}
-      <span>puntos</span>
-    </div>
     <PlayerReaction state={state} />
   </div>
 );
