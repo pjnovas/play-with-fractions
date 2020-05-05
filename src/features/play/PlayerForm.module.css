@@ -52,6 +52,7 @@
   margin: 0;
   display: flex;
   justify-content: flex-end;
+  padding-top: 0.3em;
 }
 
 .content .error div {

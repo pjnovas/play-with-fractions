@@ -1,0 +1,124 @@
+.cards {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  padding: 4em 0 4em 0;
+  background: #022638;
+  position: relative;
+  margin-bottom: 2.5em;
+}
+
+.card {
+  display: flex;
+  background: white;
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer;
+  top: 0;
+  margin: 1rem 0.2rem;
+  transition: top 0.5s ease-in-out, opacity 0.5s ease-in-out;
+
+  width: 20vw;
+  height: 25vw;
+  min-width: 110px;
+  min-height: 140px;
+  max-width: 160px;
+  max-height: 200px;
+}
+
+.card:hover,
+.card.selected {
+  box-shadow: 0 0 10px rgba(255,255,255,1);
+  top: -1em;
+}
+
+.card.notSelected:hover,
+.card.notSelected {
+  box-shadow: none;
+  top: 0;
+  opacity: 0.5;
+}
+
+.card.correct {
+  box-shadow: 0 0 50px rgb(0, 255, 0);
+  top: -1em;
+  opacity: 1;
+}
+
+.card.selected.incorrect {
+  box-shadow: 0 0 50px rgb(255, 0, 0);
+  top: 0;
+  opacity: 0.5;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 6px;
+}
+
+.cardInner {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 38% 80% 38% 80%;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 7rem;
+  font-weight: bold;
+  padding-top: 0.2em;
+}
+
+.card.yellow::before {
+  background: rgb(255, 189, 6);
+}
+
+.yellow .cardInner {
+  color: rgb(255, 189, 6);
+  -webkit-text-stroke: 2px rgb(193, 150, 32);
+}
+
+.card.blue::before {
+  background: rgb(31, 6, 255);
+}
+
+.blue .cardInner {
+  color: rgb(31, 6, 255);
+  -webkit-text-stroke: 2px rgb(13, 45, 162);
+}
+
+.card.green::before {
+  background: rgb(9, 255, 29);
+}
+
+.green .cardInner {
+  color: rgb(9, 255, 29);
+  -webkit-text-stroke: 2px rgb(25, 199, 40);
+}
+
+.card.red::before {
+  background: rgb(255, 9, 9);
+}
+
+.red .cardInner {
+  color: rgb(255, 9, 9);
+  -webkit-text-stroke: 2px rgb(218, 13, 13);
+}
+
+.card.violet::before {
+  background: rgb(206, 9, 255);
+}
+
+.violet .cardInner {
+  color: rgb(206, 9, 255);
+  -webkit-text-stroke: 2px rgb(167, 18, 204);
+}
