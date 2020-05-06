@@ -1,5 +1,4 @@
 import { prop, pipe, isEqual } from 'lodash/fp';
-import { identity } from 'lodash';
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const wsURL = process.env.REACT_APP_WS_URL;
@@ -12,12 +11,14 @@ export const websocket = createSlice({
     status: null
   },
   reducers: {
-    connect: identity,
-    setStatus: (state, { payload: status }) => ({ ...state, status })
+    setStatus: (state, { payload: status }) => ({ ...state, status }),
+    setOpen: state => ({ ...state, status: 'OPEN' }),
+    setClosed: state => ({ ...state, status: 'CLOSED' }),
+    setError: state => ({ ...state, status: 'ERROR' })
   }
 });
 
-export const { connect, setStatus } = websocket.actions;
+export const { setOpen, setClosed, setError } = websocket.actions;
 
 // Selectors
 

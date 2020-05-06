@@ -50,6 +50,7 @@ const socketListener = function* (socket) {
 
       if (adminActions.includes(action.type)) {
         const adminIds = yield select(getAdminIds);
+
         if (!adminIds.includes(socket.id)) {
           console.log('DISALLOWED ACTION', action);
           return; // DISALLOWED

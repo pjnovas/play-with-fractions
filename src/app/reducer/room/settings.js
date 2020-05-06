@@ -1,37 +1,32 @@
 import { createSlice } from '@reduxjs/toolkit';
 import shortid from 'shortid';
-import { identity } from 'lodash';
+
+const initialState = {
+  id: null,
+  name: '',
+  cards: [],
+  maxPlayers: 20,
+  maxPerTable: 4,
+  cardsPerRound: 3
+};
 
 export const settings = createSlice({
   name: 'room/settings',
-  initialState: {
-    id: null,
-    name: '',
-    cards: [],
-    maxPlayers: 20,
-    maxPerTable: 4,
-    cardsPerRound: 3
-  },
+  initialState,
   reducers: {
     create: (state, { payload }) => ({
       id: shortid.generate(),
       ...payload
     }),
     replace: (state, { payload }) => payload,
-    fetch: identity
+    fetch: state => ({ ...state, notFound: false }),
+    notFound: state => ({
+      ...initialState,
+      notFound: true
+    })
   }
 });
 
-export const { create, replace, fetch } = settings.actions;
-
-export const notFound = id => ({
-  type: `${settings.name}/notFound`,
-  error: true,
-  payload: {
-    id,
-    code: 404,
-    message: 'Room not found'
-  }
-});
+export const { create, replace, fetch, notFound } = settings.actions;
 
 export default settings.reducer;

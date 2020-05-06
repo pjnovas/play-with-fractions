@@ -5,15 +5,27 @@ import {
   call,
   select,
   takeEvery,
-  all
+  all,
+  delay
 } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
+import { pick } from 'lodash';
 import { prop } from 'lodash/fp';
 
-import { connect, setStatus, getWSUrl, isOnline } from 'reducer/websocket';
-import { replace, fetch } from 'app/reducer/room/settings';
+import {
+  setOpen,
+  setClosed,
+  setError,
+  getWSUrl,
+  isOnline
+} from 'reducer/websocket';
+
+import { replace, fetch, notFound } from 'app/reducer/room/settings';
+import { join } from 'app/reducer/room/players';
+import { setLoading, setData } from 'reducer/player';
 import { types as Routes } from 'routes';
 
+const allowLocalAuth = !!process.env.REACT_APP_ALLOW_LOCAL_AUTH;
 // const pingTime = process.env.REACT_APP_PING_TIME || 30000;
 // const latency = process.env.REACT_APP_LATENCY || 1000;
 
@@ -27,28 +39,43 @@ const createWebSocketsChannel = socket =>
     //   }, pingTime + latency);
     // };
 
-    socket.addEventListener('open', () => {
-      emit(setStatus('OPEN'));
-    });
+    const onOpen = () => {
+      // heartbeat();
+      emit(setOpen());
+    };
 
-    socket.addEventListener('error', event => {
-      emit(setStatus('ERROR'));
-      console.error('Websocket error: ', event);
-    });
-
-    socket.addEventListener('close', event => {
+    const onClose = event => {
       // clearTimeout(this.pingTimeout);
-      emit(setStatus('CLOSED'));
-    });
+      emit(setClosed());
+    };
 
-    socket.addEventListener('message', event => {
+    const onError = event => {
+      emit(setError());
+      console.error('Websocket error: ', event);
+    };
+
+    const onMessage = event => {
+      console.log('onMessage: ', event.data);
       emit(JSON.parse(event.data));
-    });
+    };
 
-    // socket.addEventListener('open', heartbeat);
+    socket.addEventListener('open', onOpen);
+    socket.addEventListener('error', onError);
+    socket.addEventListener('close', onClose);
+    socket.addEventListener('message', onMessage);
+
     // socket.addEventListener('ping', heartbeat);
 
-    return () => socket.close();
+    return () => {
+      // console.log('socket.removeEventListener');
+      socket.removeEventListener('open', onOpen);
+      socket.removeEventListener('error', onError);
+      socket.removeEventListener('close', onClose);
+      socket.removeEventListener('message', onMessage);
+
+      socket.close();
+      socket = null;
+    };
   });
 
 const listener = function* (socket) {
@@ -57,6 +84,10 @@ const listener = function* (socket) {
   while (true) {
     const action = yield take(channel);
     yield put(action);
+
+    if ([setClosed.type, setError.type].includes(action.type)) {
+      channel.close();
+    }
   }
 };
 
@@ -73,34 +104,91 @@ const handleIO = function* (socket) {
 };
 
 const connectWS = function* () {
-  if (yield select(isOnline)) return; // already connected
-
-  const wsURL = yield select(getWSUrl);
-  yield fork(handleIO, new WebSocket(wsURL));
-};
-
-const onOpenRoomAdmin = function* (action) {
-  if (!(yield select(isOnline))) {
-    yield fork(connectWS);
-    yield take(setStatus('OPEN').type);
+  if (yield select(isOnline)) {
+    // if is already online > skip it
+    return;
   }
 
-  const roomId = yield select(prop('room.settings.id'));
-  if (!roomId) {
-    yield put({
-      type: 'WS:SEND',
-      payload: fetch()
-    });
+  while (true) {
+    const wsURL = yield select(getWSUrl);
+    const task = yield fork(handleIO, new WebSocket(wsURL));
 
-    yield take(replace.type); // wait for room
+    const action = yield take([setClosed.type, setError.type, setOpen.type]);
+
+    if (action.type === setOpen.type) {
+      // connected! - wait for a failure
+      yield take([setClosed.type, setError.type]);
+    } else {
+      // wait 3 seconds and try again
+      yield delay(3000);
+    }
+
+    task.cancel();
   }
-
-  // room is ready since it's replied from connection
 };
 
-const onEnterPlay = function* (action) {
-  yield call(connectWS);
-  yield take(setStatus('OPEN').type);
+const reloadCurrent = function* (action) {
+  const currentPage = yield select(prop('location.type'));
+
+  // eslint-disable-next-line default-case
+  switch (currentPage) {
+    case Routes.ADMIN: {
+      // TODO: get latest creation from local storage
+      break;
+    }
+    case Routes.ADMIN_ROOM: {
+      yield put({
+        type: 'WS:SEND',
+        payload: fetch()
+      });
+
+      yield take(replace.type); // wait for room
+      break;
+    }
+    case Routes.PLAY: {
+      if (allowLocalAuth) {
+        try {
+          const roomId = yield select(prop('location.params.roomId'));
+          let data = JSON.parse(window.localStorage.getItem('player'));
+
+          if (data.roomId === roomId) {
+            const player = pick(data, ['nickname', 'email']);
+
+            yield put({
+              type: 'WS:SEND',
+              payload: join(player)
+            });
+
+            yield put(setLoading(true));
+            yield put(setData(player));
+          }
+        } catch (e) {
+          window.localStorage.removeItem('player');
+        }
+      }
+      break;
+    }
+  }
+};
+
+const storePlayerInfo = function* (action) {
+  const roomId = yield select(prop('location.params.roomId'));
+  const { nickname, email } = action.payload;
+
+  window.localStorage.setItem(
+    'player',
+    JSON.stringify({
+      roomId,
+      nickname,
+      email
+    })
+  );
+};
+
+const onRoomNotFound = function* (action) {
+  const roomId = yield select(prop('location.params.roomId'));
+  console.log('<< room not found! >>', roomId);
+  window.localStorage.removeItem('player');
 };
 
 const onNewRoom = function* (action) {
@@ -117,10 +205,15 @@ const onNewRoom = function* (action) {
 
 export default function* () {
   yield all([
-    takeEvery(connect.type, connectWS),
-    takeEvery(Routes.ADMIN, connectWS),
-    takeEvery(Routes.ADMIN_ROOM, onOpenRoomAdmin),
-    takeEvery(Routes.PLAY, onEnterPlay),
-    takeEvery(replace.type, onNewRoom)
+    // When pages that need WS
+    takeEvery([Routes.ADMIN, Routes.ADMIN_ROOM, Routes.PLAY], connectWS),
+
+    // When WS Online > reload
+    takeEvery(setOpen.type, reloadCurrent),
+
+    // ...
+    takeEvery(setData, storePlayerInfo),
+    takeEvery(replace.type, onNewRoom),
+    takeEvery(notFound.type, onRoomNotFound)
   ]);
 }

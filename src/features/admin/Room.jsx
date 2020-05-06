@@ -1,14 +1,18 @@
 import React from 'react';
 import styles from './Room.module.css';
 import { flatten, isEmpty, noop } from 'lodash';
-import { propOr } from 'lodash/fp';
+import { prop, propOr } from 'lodash/fp';
 import { useDispatch, useSelector } from 'react-redux';
+import { types as Routes } from 'routes';
 import { start } from 'app/reducer/room/tables';
+import { isOnline } from 'reducer/websocket';
 import RoomLink from './RoomLink';
 
 const Room = () => {
   const dispatch = useDispatch();
-  const settings = useSelector(propOr([], 'room.settings'));
+  const online = useSelector(isOnline);
+  const token = useSelector(prop('location.params.token'));
+  const settings = useSelector(propOr({}, 'room.settings'));
   const players = useSelector(propOr([], 'room.players'));
   const sockets = useSelector(propOr([], 'sockets'));
 
@@ -25,14 +29,18 @@ const Room = () => {
 
   const onlinePlayers = players.filter(({ sockets }) => !isEmpty(sockets));
   const offlinePlayers = players.filter(({ sockets }) => isEmpty(sockets));
-  const isReady = onlinePlayers.length === settings.maxPlayers;
+  const isReady = online && onlinePlayers.length === settings.maxPlayers;
 
   const startGame = () => dispatch({ type: 'WS:SEND', payload: start() });
+  const goToNewRoom = () => dispatch({ type: Routes.ADMIN, params: { token } });
 
   return (
     <div className={styles.content}>
-      {!settings?.id ? (
-        <div>CARGANDO PARTIDA</div>
+      {!settings.id || settings.notFound ? (
+        <>
+          <h2>Partida no encontrada</h2>
+          <button onClick={goToNewRoom}>Crear una partida nueva</button>
+        </>
       ) : (
         <>
           <RoomLink />

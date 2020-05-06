@@ -1,12 +1,25 @@
 import { prop } from 'lodash/fp';
 import { all, takeEvery, select, put, call } from 'redux-saga/effects';
 
-import { newConnection, removeClient, replace } from 'app/reducer/sockets';
+import {
+  newConnection,
+  removeClient,
+  replace,
+  setRoomId
+} from 'app/reducer/sockets';
 import * as rooms from 'app/reducer/room/settings';
 import * as players from 'app/reducer/room/players';
 
-const createRoom = function* () {
+const createRoom = function* (action) {
   const room = yield select(prop('room.settings'));
+
+  // update current admin with roomId
+  yield put(
+    setRoomId({
+      sid: action.meta.sid,
+      roomId: room.id
+    })
+  );
 
   yield put({
     type: 'WS:BROADCAST:ADMINS',

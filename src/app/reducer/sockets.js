@@ -10,11 +10,21 @@ export const sockets = createSlice({
       state.push(payload);
     },
     removeClient: (state, { payload }) =>
-      state.filter(({ id }) => id !== payload.id)
+      state.filter(({ id }) => id !== payload.id),
+    setRoomId: (state, { payload }) =>
+      state.map(socket => ({
+        ...socket,
+        roomId: socket.id === payload.sid ? payload.roomId : socket.roomId
+      }))
   }
 });
 
-export const { newConnection, removeClient, replace } = sockets.actions;
+export const {
+  newConnection,
+  removeClient,
+  replace,
+  setRoomId
+} = sockets.actions;
 
 // Selectors
 

@@ -1,11 +1,12 @@
 import React from 'react';
 import styles from './RoomForm.module.css';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { compact } from 'lodash';
 
 import { create } from 'app/reducer/room/settings';
 import { getTablesConfig, getFraction } from 'app/utils/room';
+import { isOnline } from 'reducer/websocket';
 
 const cards = [
   '1',
@@ -13,8 +14,8 @@ const cards = [
   '1/3',
   '4/3',
   '1/4',
-  '5/4',
   '3/4',
+  '5/4',
   '2/5',
   '3/5',
   '4/5',
@@ -56,6 +57,7 @@ const getHelpCards = (cards, cardsPerRound) => {
 
 const RoomForm = () => {
   const dispatch = useDispatch();
+  const online = useSelector(isOnline);
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
       maxPlayers: 5, // 24,
@@ -140,7 +142,11 @@ const RoomForm = () => {
           <textarea ref={register} name="cards" />
         </div>
         <div className={styles.footer}>
-          <button type="submit">Crear</button>
+          {online ? (
+            <button type="submit">Crear</button>
+          ) : (
+            <p>Conectando con el servidor ...</p>
+          )}
         </div>
       </form>
     </div>
