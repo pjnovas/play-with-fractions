@@ -55,7 +55,6 @@ const createWebSocketsChannel = socket =>
     };
 
     const onMessage = event => {
-      console.log('onMessage: ', event.data);
       emit(JSON.parse(event.data));
     };
 
@@ -67,14 +66,13 @@ const createWebSocketsChannel = socket =>
     // socket.addEventListener('ping', heartbeat);
 
     return () => {
-      // console.log('socket.removeEventListener');
-      socket.removeEventListener('open', onOpen);
-      socket.removeEventListener('error', onError);
-      socket.removeEventListener('close', onClose);
-      socket.removeEventListener('message', onMessage);
-
-      socket.close();
-      socket = null;
+      try {
+        socket.removeEventListener('open', onOpen);
+        socket.removeEventListener('error', onError);
+        socket.removeEventListener('close', onClose);
+        socket.removeEventListener('message', onMessage);
+        socket.close();
+      } catch (e) {}
     };
   });
 

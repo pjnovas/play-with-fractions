@@ -10,9 +10,6 @@ export const Status = {
   Ended: 'ENDED'
 };
 
-const waitTimeout = 5000;
-const roundTimeout = 15000;
-
 const createTable = ({ players }) => ({
   id: shortid.generate(),
   players,
@@ -30,6 +27,8 @@ export const tables = createSlice({
   name: 'room/tables',
   initialState: {
     status: Status.WaitingPlayers,
+    waitTimeout: 0,
+    roundTimeout: 0,
     timeout: 0,
     deck: [],
     cards: [],
@@ -39,7 +38,9 @@ export const tables = createSlice({
   reducers: {
     start: identity,
     create: (state, { payload }) => ({
-      timeout: waitTimeout,
+      waitTimeout: payload.waitTimeout,
+      roundTimeout: payload.roundTimeout,
+      timeout: payload.waitTimeout,
       deck: payload.deck,
       cards: [],
       tables: payload.tables.map(createTable)
@@ -47,7 +48,7 @@ export const tables = createSlice({
     replace: (state, { payload }) => ({ ...state, ...payload }),
     deal: (state, { payload }) => ({
       ...state,
-      timeout: roundTimeout,
+      timeout: state.roundTimeout,
       status: Status.WaitingPicks,
       deck: drop(state.deck, payload),
       cards: take(state.deck, payload),
@@ -58,6 +59,10 @@ export const tables = createSlice({
         players: table.players.map(player => ({ ...player, state: '' }))
       }))
     }),
+    tick: state => {
+      state.timeout -= 1000;
+      if (state.timeout < 0) state.timeout = 0;
+    },
     pick: (state, { payload }) => {
       const table = state.tables.find(table => table.id === payload.id);
       if (!table) return state;
@@ -70,7 +75,7 @@ export const tables = createSlice({
     },
     round: (state, { payload }) => ({
       ...state,
-      timeout: waitTimeout,
+      timeout: state.waitTimeout,
       status: Status.EndRound,
       winCard: payload,
       tables: state.tables.map(table => ({
@@ -94,6 +99,7 @@ export const {
   create,
   replace,
   deal,
+  tick,
   pick,
   round,
   ended

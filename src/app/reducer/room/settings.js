@@ -7,6 +7,8 @@ const initialState = {
   cards: [],
   maxPlayers: 20,
   maxPerTable: 4,
+  waitTimeout: 5,
+  roundTimeout: 15,
   cardsPerRound: 3
 };
 

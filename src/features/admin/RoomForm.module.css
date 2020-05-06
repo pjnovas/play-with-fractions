@@ -4,29 +4,43 @@
   align-items: center;
 }
 
-.content h1 {
+h1 {
   font-size: 3em;
   margin: 0.5rem 0;
 }
 
-.content > form {
+form {
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   background: #0d394e;
   padding: 1em;
   border-radius: 4px;
 }
 
-.content > form > div {
+form > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 1em;
 }
 
-.content .helpTables {
+.row > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.row > div > input {
+  margin-left: 1em;
+}
+
+.helpTables {
   justify-content: flex-end;
+}
+
+.underline {
   border-bottom: 2px solid #d6e0e4;
+  padding: 1em 0;
 }
 
 .cards {
@@ -38,15 +52,10 @@
   font-size: 1.3em;
 }
 
-.cards span {
-  display: block;
-  margin: 1em 0 0 0;
-}
-
 .cards ul {
   list-style: none;
   display: flex;
-  width: 350px;
+  width: 450px;
   padding-left: 0;
   flex-wrap: wrap;
   margin: 0;
@@ -65,8 +74,19 @@
   font-size: 1.5em;
 }
 
-.content input, 
-.content textarea {
+.roundCards {
+  padding: 1em 0;
+  display: flex;
+  align-items: center;
+}
+
+.roundCards > label {
+  font-size: 1em;
+  padding-right: 1em;
+}
+
+input, 
+textarea {
   border: none;
   padding: 0 0.6em;
   border-radius: 4px;
@@ -74,17 +94,17 @@
   background: #d6e0e4;
 }
 
-.content input[type=number] {
+input[type=number] {
   text-align: right;
 }
 
-.content textarea {
+textarea {
   width: 60px;
   height: 260px;
   resize: none;
   text-align: right;
 }
 
-.content .footer {
+.footer {
   justify-content: center;
 }

@@ -62,6 +62,8 @@ const RoomForm = () => {
     defaultValues: {
       maxPlayers: 5, // 24,
       maxPerTable: 3,
+      waitTimeout: 5,
+      roundTimeout: 15,
       cardsPerRound: 3,
       cards: cards.join('\n')
     }
@@ -74,6 +76,8 @@ const RoomForm = () => {
         ...room,
         maxPlayers: Number(room.maxPlayers),
         maxPerTable: Number(room.maxPerTable),
+        waitTimeout: Number(room.waitTimeout),
+        roundTimeout: Number(room.roundTimeout),
         cardsPerRound: Number(room.cardsPerRound),
         cards: compact(room.cards.split('\n'))
       })
@@ -89,42 +93,56 @@ const RoomForm = () => {
     <div className={styles.content}>
       <h1>Nueva Partida</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label>Nombre</label>
+        <div className={[styles.row, styles.underline].join(' ')}>
+          <label>Nombre de Partida</label>
           <input ref={register} name="name" />
         </div>
-        <div>
-          <label>Cantidad de Jugadores</label>
-          <input
-            ref={register}
-            name="maxPlayers"
-            type="number"
-            min="2"
-            max="50"
-          />
+        <div className={styles.row}>
+          <div>
+            <label>Total de jugadores</label>
+            <input
+              ref={register}
+              name="maxPlayers"
+              type="number"
+              min="2"
+              max="50"
+            />
+          </div>
+          <div>
+            <label>Jugadores por mesa</label>
+            <input
+              ref={register}
+              name="maxPerTable"
+              type="number"
+              min="2"
+              max="10"
+            />
+          </div>
         </div>
-        <div>
-          <label>Jugadores por mesa</label>
-          <input
-            ref={register}
-            name="maxPerTable"
-            type="number"
-            min="2"
-            max="10"
-          />
-        </div>
-        <div>
-          <label>Cartas por ronda</label>
-          <input
-            ref={register}
-            name="cardsPerRound"
-            type="number"
-            min="2"
-            max="5"
-          />
-        </div>
-        <div className={styles.helpTables}>
+        <div className={[styles.helpTables, styles.underline].join(' ')}>
           <label>{getHelpTable(maxPlayers, maxPerTable)}</label>
+        </div>
+        <div className={[styles.row, styles.underline].join(' ')}>
+          <div>
+            <label>Tiempo de espera (seg)</label>
+            <input
+              ref={register}
+              name="waitTimeout"
+              type="number"
+              min="2"
+              max="20"
+            />
+          </div>
+          <div>
+            <label>Tiempo por Ronda (seg)</label>
+            <input
+              ref={register}
+              name="roundTimeout"
+              type="number"
+              min="5"
+              max="30"
+            />
+          </div>
         </div>
         <div>
           <div className={styles.cards}>
@@ -137,6 +155,16 @@ const RoomForm = () => {
                 ></li>
               ))}
             </ul>
+            <div className={styles.roundCards}>
+              <label>Cartas por ronda</label>
+              <input
+                ref={register}
+                name="cardsPerRound"
+                type="number"
+                min="2"
+                max="5"
+              />
+            </div>
             <span>{getHelpCards(currentCards.length, cardsPerRound)}</span>
           </div>
           <textarea ref={register} name="cards" />

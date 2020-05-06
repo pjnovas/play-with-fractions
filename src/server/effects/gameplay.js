@@ -8,6 +8,7 @@ import {
   replace,
   deal,
   pick as pickCard,
+  tick,
   round,
   ended,
   getPlayersBySocketIds,
@@ -64,6 +65,27 @@ const notifyGamePlay = function* () {
   );
 };
 
+const notifyTick = function* () {
+  const allTables = yield select(prop('room.tables'));
+
+  yield put({
+    type: 'WS:BROADCAST:ADMINS',
+    payload: replace({ timeout: allTables.timeout })
+  });
+
+  yield all(
+    allTables.tables.map(({ id }) =>
+      put({
+        type: 'WS:BROADCAST:TABLE',
+        meta: { id },
+        payload: tableClient.replace({
+          timeout: allTables.timeout
+        })
+      })
+    )
+  );
+};
+
 const getWinCard = function* () {
   const cards = yield select(prop('room.tables.cards'));
 
@@ -79,14 +101,23 @@ const getWinCard = function* () {
 };
 
 const startGame = function* () {
-  const { cards, maxPlayers, maxPerTable, cardsPerRound } = yield select(
-    prop('room.settings')
-  );
+  const ONE_SEC = 1000;
+
+  const {
+    cards,
+    maxPlayers,
+    maxPerTable,
+    cardsPerRound,
+    waitTimeout,
+    roundTimeout
+  } = yield select(prop('room.settings'));
 
   const players = yield select(prop('room.players'));
 
   yield put(
     create({
+      waitTimeout: waitTimeout * ONE_SEC,
+      roundTimeout: roundTimeout * ONE_SEC,
       deck: shuffle(cards),
       tables: getTables(players, { maxPlayers, maxPerTable })
     })
@@ -94,17 +125,32 @@ const startGame = function* () {
 
   while ((yield select(prop('room.tables.deck'))).length > 0) {
     yield call(notifyGamePlay);
-    yield delay(yield select(prop('room.tables.timeout')));
+
+    while ((yield select(prop('room.tables.timeout'))) > 0) {
+      yield delay(ONE_SEC);
+      yield put(tick());
+      yield call(notifyTick);
+    }
 
     yield put(deal(cardsPerRound));
     yield call(notifyGamePlay);
-    yield delay(yield select(prop('room.tables.timeout')));
+
+    while ((yield select(prop('room.tables.timeout'))) > 0) {
+      yield delay(ONE_SEC);
+      yield put(tick());
+      yield call(notifyTick);
+    }
 
     const winCard = yield call(getWinCard);
     yield put(round(winCard));
   }
 
-  yield delay(yield select(prop('room.tables.timeout')));
+  while ((yield select(prop('room.tables.timeout'))) > 0) {
+    yield delay(ONE_SEC);
+    yield put(tick());
+    yield call(notifyTick);
+  }
+
   yield put(ended());
 };
 
