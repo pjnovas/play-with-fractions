@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  justify-content: space-around;
+}
+
+.header button {
+  border: 3px solid #000000;
+  background: #ffc83d;
+  color: #000000;
+}
+
+.header button.disabled {
+  cursor: default;
+  border: 2px solid #586165;
+  color: #8a8a8a;
+  background: #586165;
+}
+
+.header button.disabled:hover {
+  color: #8a8a8a;
+  background: #586165;
+}

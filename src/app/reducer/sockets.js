@@ -1,5 +1,7 @@
+import { size } from 'lodash';
 import { prop, reduce } from 'lodash/fp';
 import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { getPlayersSockets } from './room/players';
 
 export const sockets = createSlice({
   name: 'sockets',
@@ -37,6 +39,19 @@ export const getRoomIds = roomId =>
 export const getAdminIds = createSelector(
   prop(sockets.name),
   reduce(reduceById('isAdmin', true), [])
+);
+
+export const getAdminsCount = createSelector(getAdminIds, size);
+
+export const getPlayersToJoinCount = createSelector(
+  getPlayersSockets,
+  prop(sockets.name),
+  (playerSockets, sockets) =>
+    reduce(
+      (count, { id, isAdmin }) =>
+        !isAdmin && !playerSockets.includes(id) ? count + 1 : count,
+      0
+    )(sockets)
 );
 
 export default sockets.reducer;

@@ -19,6 +19,7 @@ import {
 import * as tableClient from 'app/reducer/room/table';
 import { getTablesConfig } from 'app/utils/room';
 
+const ONE_SEC = 1000;
 const playerFields = ['email', 'nickname'];
 
 const getTables = (players, { maxPlayers, maxPerTable }) => {
@@ -100,9 +101,15 @@ const getWinCard = function* () {
   );
 };
 
-const startGame = function* () {
-  const ONE_SEC = 1000;
+const delayTimeout = function* () {
+  while ((yield select(prop('room.tables.timeout'))) > 0) {
+    yield delay(ONE_SEC);
+    yield put(tick());
+    yield call(notifyTick);
+  }
+};
 
+const startGame = function* () {
   const {
     cards,
     maxPlayers,
@@ -125,32 +132,17 @@ const startGame = function* () {
 
   while ((yield select(prop('room.tables.deck'))).length > 0) {
     yield call(notifyGamePlay);
-
-    while ((yield select(prop('room.tables.timeout'))) > 0) {
-      yield delay(ONE_SEC);
-      yield put(tick());
-      yield call(notifyTick);
-    }
+    yield* delayTimeout();
 
     yield put(deal(cardsPerRound));
     yield call(notifyGamePlay);
-
-    while ((yield select(prop('room.tables.timeout'))) > 0) {
-      yield delay(ONE_SEC);
-      yield put(tick());
-      yield call(notifyTick);
-    }
+    yield* delayTimeout();
 
     const winCard = yield call(getWinCard);
     yield put(round(winCard));
   }
 
-  while ((yield select(prop('room.tables.timeout'))) > 0) {
-    yield delay(ONE_SEC);
-    yield put(tick());
-    yield call(notifyTick);
-  }
-
+  yield* delayTimeout();
   yield put(ended());
 };
 

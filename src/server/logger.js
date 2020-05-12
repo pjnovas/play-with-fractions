@@ -9,21 +9,26 @@ export default store => next => action => {
   let result = next(action);
   const nextState = store.getState();
 
-  const diff = diffJson(prevState, nextState);
+  // TODO: make this recursive
+  Object.keys(nextState).forEach(key => {
+    const diff = diffJson(prevState[key], nextState[key]);
 
-  console.log(
-    diff.reduce(
-      (log, { value, added, removed }) =>
-        `${log}${
-          added
-            ? colors.green(value)
-            : removed
-            ? colors.red(value)
-            : colors.gray(value)
-        }`,
-      ''
-    )
-  );
+    if (diff.length > 1) {
+      console.log(
+        diff.reduce(
+          (log, { value, added, removed }) =>
+            `${log}${
+              added
+                ? colors.green(value)
+                : removed
+                ? colors.red(value)
+                : colors.gray(value)
+            }`,
+          colors.gray(`"${key}": `)
+        )
+      );
+    }
+  });
 
   console.groupEnd(action.type);
   return result;

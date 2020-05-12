@@ -1,6 +1,6 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
-import { isEmpty } from 'lodash';
-import { prop, find } from 'lodash/fp';
+import { isEmpty, flow, flatten } from 'lodash';
+import { propOr, filter, map } from 'lodash/fp';
 
 export const players = createSlice({
   name: 'room/players',
@@ -41,11 +41,22 @@ export const { join, replace, disconnect } = players.actions;
 
 // Selectors
 
-export const isPlayerOnline = email =>
-  createSelector(
-    prop('players'),
-    find({ email }),
-    player => !isEmpty(player.sockets)
-  );
+export const getPlayersSockets = createSelector(
+  propOr([], 'room.players'),
+  flow(
+    map(({ sockets }) => sockets),
+    flatten
+  )
+);
+
+export const getOnlinePlayers = createSelector(
+  propOr([], 'room.players'),
+  filter(({ sockets }) => !isEmpty(sockets))
+);
+
+export const getOfflinePlayers = createSelector(
+  propOr([], 'room.players'),
+  filter(({ sockets }) => isEmpty(sockets))
+);
 
 export default players.reducer;

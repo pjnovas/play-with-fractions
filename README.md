@@ -1,3 +1,27 @@
+# Play with Fractions
+
+A quick realtime game of fraction cards for kids to play and teachers to follow.  
+
+This is also an experiment of making a realtime game using web sockets to share actions and reducers between clients and server. Having a Sagas on server side as a gameloop.
+
+----------
+
+## Running locally
+
+Configure your `.env` file from `example.env`
+
+* `yarn`: install dependencies
+* `yarn start`: build and run react app
+* `yarn server`: lift up the websockets server
+
+### Web Routes 
+
+* `/admin/[your-secret]`: to create a new game
+* `/admin/[your-secret]/[game-id]`: manage current game and players
+* `/play/[game-id]`: path for players
+
+----------
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
 ## Available Scripts

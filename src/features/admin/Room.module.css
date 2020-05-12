@@ -7,57 +7,8 @@
   text-align: center;
 }
 
-.header {
-  display: flex;
-  justify-content: space-around;
-}
-
-.header button {
-  border: 3px solid #000000;
-  background: #ffc83d;
-  color: #000000;
-}
-
-.header button.disabled {
-  cursor: default;
-  border: 2px solid #586165;
-  color: #8a8a8a;
-  background: #586165;
-}
-
-.header button.disabled:hover {
-  color: #8a8a8a;
-  background: #586165;
-}
-
 .playerLists {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-}
-
-.playerLists h3 {
-  margin: 0;
-}
-
-.playerLists > div {
-  display: flex;
-  flex-direction: column;
-  padding: 1em;
-  min-width: 300px;
-  border-radius: 4px;
-  background-color: #0b3c54;
-}
-
-.players {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  padding: 0;
-  margin: 0;
-}
-
-.players li {
-  display: flex;
 }
