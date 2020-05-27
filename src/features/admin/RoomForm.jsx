@@ -5,8 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { compact } from 'lodash';
 
 import { create } from 'app/reducer/room/settings';
-import { getTablesConfig, getFraction } from 'app/utils/room';
+import { getTablesConfig } from 'app/utils/room';
 import { isOnline } from 'reducer/websocket';
+import CardList from './CardList';
 
 const cards = [
   '1',
@@ -147,14 +148,7 @@ const RoomForm = () => {
         <div>
           <div className={styles.cards}>
             <label>{`Mazo de cartas (${currentCards.length})`}</label>
-            <ul>
-              {currentCards.map((card, i) => (
-                <li
-                  key={`${card}-${i}`}
-                  dangerouslySetInnerHTML={{ __html: getFraction(card) }}
-                ></li>
-              ))}
-            </ul>
+            <CardList cards={currentCards} />
             <div className={styles.roundCards}>
               <label>Cartas por ronda</label>
               <input

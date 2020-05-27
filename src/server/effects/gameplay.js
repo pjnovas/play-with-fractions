@@ -1,6 +1,15 @@
 import { noop, shuffle, times, drop, take as arrayTake } from 'lodash';
 import { prop, pick } from 'lodash/fp';
-import { all, takeEvery, select, put, delay, call } from 'redux-saga/effects';
+import {
+  all,
+  takeLeading,
+  takeEvery,
+  takeLatest,
+  select,
+  put,
+  delay,
+  call
+} from 'redux-saga/effects';
 
 import {
   start,
@@ -54,6 +63,7 @@ const notifyGamePlay = function* () {
         meta: { id },
         payload: tableClient.replace({
           id,
+          status,
           players,
           points,
           pick: allTables.status === Status.WaitingPicks ? '' : noop(),
@@ -87,6 +97,25 @@ const notifyTick = function* () {
   );
 };
 
+const notifyGameEnd = function* () {
+  const allTables = yield select(prop('room.tables'));
+
+  yield put({
+    type: 'WS:BROADCAST:ADMINS',
+    payload: ended()
+  });
+
+  yield all(
+    allTables.tables.map(({ id, players, status, points }) =>
+      put({
+        type: 'WS:BROADCAST:TABLE',
+        meta: { id },
+        payload: tableClient.ended()
+      })
+    )
+  );
+};
+
 const getWinCard = function* () {
   const cards = yield select(prop('room.tables.cards'));
 
@@ -101,7 +130,9 @@ const getWinCard = function* () {
   );
 };
 
-const delayTimeout = function* () {
+const notifyAndWait = function* () {
+  yield call(notifyGamePlay);
+
   while ((yield select(prop('room.tables.timeout'))) > 0) {
     yield delay(ONE_SEC);
     yield put(tick());
@@ -126,24 +157,24 @@ const startGame = function* () {
       waitTimeout: waitTimeout * ONE_SEC,
       roundTimeout: roundTimeout * ONE_SEC,
       deck: shuffle(cards),
-      tables: getTables(players, { maxPlayers, maxPerTable })
+      tables: getTables(players, { maxPlayers, maxPerTable }),
+      status: Status.Started
     })
   );
 
-  while ((yield select(prop('room.tables.deck'))).length > 0) {
-    yield call(notifyGamePlay);
-    yield* delayTimeout();
+  yield* notifyAndWait();
 
+  while ((yield select(prop('room.tables.deck'))).length > 0) {
     yield put(deal(cardsPerRound));
-    yield call(notifyGamePlay);
-    yield* delayTimeout();
+    yield* notifyAndWait();
 
     const winCard = yield call(getWinCard);
     yield put(round(winCard));
+    yield* notifyAndWait();
   }
 
-  yield* delayTimeout();
   yield put(ended());
+  yield call(notifyGameEnd);
 };
 
 const playersPick = function* ({ meta, payload }) {
@@ -193,7 +224,15 @@ const notifyPlayerPick = function* (id) {
   });
 };
 
+const buildRanking = function* () {
+  // TODO
+};
+
 export default function* () {
-  yield all([takeEvery(start.type, startGame)]);
-  yield all([takeEvery(tableClient.pick.type, playersPick)]);
+  yield all([
+    takeLeading(start.type, startGame),
+    takeEvery(tableClient.pick.type, playersPick),
+    takeLatest(ended.type, buildRanking)
+    // TODO: allow to cancel current game
+  ]);
 }

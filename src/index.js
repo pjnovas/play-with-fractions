@@ -6,7 +6,10 @@ import createStore from './createStore';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 
-const { store, firstRoute } = createStore();
+// import preload from './tmp/10.state_prestart.json';
+const preload = {};
+
+const { store, firstRoute } = createStore(preload);
 
 const render = () => {
   ReactDOM.render(

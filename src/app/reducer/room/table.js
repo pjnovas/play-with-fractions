@@ -1,7 +1,6 @@
 // Reducer only for Client
 
 import { createSlice } from '@reduxjs/toolkit';
-import { identity } from 'lodash';
 import { Status } from './tables';
 
 export const table = createSlice({
@@ -20,14 +19,19 @@ export const table = createSlice({
       ...state,
       ...action.payload
     }),
-    tick: (state, action) => {
+    tick: state => {
       state.timeout -= 1000;
       if (state.timeout < 0) state.timeout = 0;
     },
     pick: (state, action) => {
       state.pick = action.payload;
     },
-    ended: identity
+    ended: state => ({
+      ...state,
+      status: Status.Ended,
+      cards: [],
+      pick: ''
+    })
   }
 });
 

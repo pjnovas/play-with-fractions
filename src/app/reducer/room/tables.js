@@ -5,6 +5,7 @@ import shortid from 'shortid';
 
 export const Status = {
   WaitingPlayers: 'WAITING_PLAYERS',
+  Started: 'STARTED',
   WaitingPicks: 'WAITING_PICKS',
   EndRound: 'END_ROUND',
   Ended: 'ENDED'
@@ -23,26 +24,26 @@ const createTable = ({ players }) => ({
   picks: {}
 });
 
+const initialState = {
+  status: Status.WaitingPlayers,
+  waitTimeout: 0,
+  roundTimeout: 0,
+  timeout: 0,
+  deck: [],
+  cards: [],
+  tables: [],
+  winCard: ''
+};
+
 export const tables = createSlice({
   name: 'room/tables',
-  initialState: {
-    status: Status.WaitingPlayers,
-    waitTimeout: 0,
-    roundTimeout: 0,
-    timeout: 0,
-    deck: [],
-    cards: [],
-    tables: [],
-    winCard: ''
-  },
+  initialState,
   reducers: {
     start: identity,
     create: (state, { payload }) => ({
-      waitTimeout: payload.waitTimeout,
-      roundTimeout: payload.roundTimeout,
+      ...initialState,
+      ...payload,
       timeout: payload.waitTimeout,
-      deck: payload.deck,
-      cards: [],
       tables: payload.tables.map(createTable)
     }),
     replace: (state, { payload }) => ({ ...state, ...payload }),
@@ -90,7 +91,10 @@ export const tables = createSlice({
         )
       }))
     }),
-    ended: identity
+    ended: (state, { payload }) => ({
+      ...state,
+      status: Status.Ended
+    })
   }
 });
 
@@ -147,6 +151,10 @@ export const getTablesBySocketIds = createSelector(
     mapValues(playerSockets, ({ email }) =>
       tables.find(table => table.players.some(player => player.email === email))
     )
+);
+
+export const isGameplay = createSelector(prop('room.tables.status'), status =>
+  [Status.Started, Status.WaitingPicks, Status.EndRound].includes(status)
 );
 
 export default tables.reducer;

@@ -5,9 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { types as Routes } from 'routes';
 
 import { getOnlinePlayers, getOfflinePlayers } from 'app/reducer/room/players';
+import { isGameplay } from 'app/reducer/room/tables';
 import Players from './Players';
 import RoomLink from './RoomLink';
 import Header from './RoomHeader';
+import Tables from './Tables';
 
 const help = {
   waiting:
@@ -25,6 +27,7 @@ const Room = () => {
   const players = useSelector(propOr([], 'room.players'));
   const onlinePlayers = useSelector(getOnlinePlayers);
   const offlinePlayers = useSelector(getOfflinePlayers);
+  const isPlaying = useSelector(isGameplay);
 
   const goToNewRoom = () => dispatch({ type: Routes.ADMIN, params: { token } });
 
@@ -40,23 +43,29 @@ const Room = () => {
           <RoomLink />
           <h1>Partida {settings.name}</h1>
           <Header />
-          <h2 title={help.waiting}>
-            Jugadores en espera ( {players.length} / {settings.maxPlayers} )
-          </h2>
-          <div className={styles.playerLists}>
-            <Players
-              title={help.online}
-              type="Online"
-              list={onlinePlayers}
-              total={settings.maxPlayers}
-            />
-            <Players
-              title={help.offline}
-              type="Offline"
-              list={offlinePlayers}
-              total={settings.maxPlayers}
-            />
-          </div>
+          {isPlaying ? (
+            <Tables />
+          ) : (
+            <>
+              <h2 title={help.waiting}>
+                Jugadores en espera ( {players.length} / {settings.maxPlayers} )
+              </h2>
+              <div className={styles.playerLists}>
+                <Players
+                  title={help.online}
+                  type="Online"
+                  list={onlinePlayers}
+                  total={settings.maxPlayers}
+                />
+                <Players
+                  title={help.offline}
+                  type="Offline"
+                  list={offlinePlayers}
+                  total={settings.maxPlayers}
+                />
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

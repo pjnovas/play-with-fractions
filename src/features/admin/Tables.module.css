@@ -1,0 +1,83 @@
+.content {
+  margin: 0 auto;
+}
+
+.cards {
+  background-color: #0b3c54;
+  padding: 1em;
+  text-align: center;
+  margin: 1em auto;
+}
+
+.cards h3 {
+  margin: 0;
+  margin-bottom: 0.5em;
+}
+
+.cards ul {
+  font-size: 1.5em;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.tables {
+  margin-top: 1em;
+  font-size: 1em;
+  display: flex;
+  font-size: 1.2em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.table {
+  margin: 0.5em;
+  background-color: #0b3c54;
+  padding: 0.5em;
+  display: flex;
+  flex-direction: column;
+  width: 28%;
+}
+
+.table > div {
+  margin: 0.3em;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.table > div > div {
+  padding: 0.5em 0.5em 0.3em 0.5em;
+}
+
+.table > div > :first-child {
+  background-color: #27576f;
+  width: 1em;
+  text-align: center;
+  border-radius: 3px;
+}
+.table > div > :nth-child(2) {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.table > div > :nth-child(3) {
+  background-color: #062d40;
+  border-radius: 3px;
+  border: 1px solid #d6e0e4;
+  color: #c4d8e0;
+  margin-left: auto;
+}
+
+.table > div > :nth-child(3).correct {
+  background-color: #178017;
+}
+
+.table > div > :nth-child(3).incorrect {
+  background-color: #c13838;
+}
+
+.table > div > :nth-child(2).empty {
+  color: #c13838;
+  font-weight: bold;
+}
