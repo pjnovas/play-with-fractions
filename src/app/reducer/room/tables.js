@@ -157,4 +157,8 @@ export const isGameplay = createSelector(prop('room.tables.status'), status =>
   [Status.Started, Status.WaitingPicks, Status.EndRound].includes(status)
 );
 
+export const hasEnded = createSelector(prop('room.tables.status'), status =>
+  [Status.Ended].includes(status)
+);
+
 export default tables.reducer;

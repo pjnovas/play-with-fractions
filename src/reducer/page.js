@@ -5,6 +5,7 @@ const components = {
   [Routes.ADMIN]: 'Admin',
   [Routes.ADMIN_ROOM]: 'AdminRoom',
   [Routes.PLAY]: 'Play',
+  [Routes.RANKING]: 'Ranking',
   [Routes.NOT_FOUND]: 'NotFound'
 };
 

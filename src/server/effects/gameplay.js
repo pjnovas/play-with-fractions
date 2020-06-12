@@ -1,5 +1,5 @@
 import { noop, shuffle, times, drop, take as arrayTake } from 'lodash';
-import { prop, pick } from 'lodash/fp';
+import { prop, pick, pipe, reduce, orderBy } from 'lodash/fp';
 import {
   all,
   takeLeading,
@@ -26,6 +26,7 @@ import {
 } from 'app/reducer/room/tables';
 
 import * as tableClient from 'app/reducer/room/table';
+import * as ranking from 'app/reducer/room/ranking';
 import { getTablesConfig } from 'app/utils/room';
 
 const ONE_SEC = 1000;
@@ -106,7 +107,7 @@ const notifyGameEnd = function* () {
   });
 
   yield all(
-    allTables.tables.map(({ id, players, status, points }) =>
+    allTables.tables.map(({ id }) =>
       put({
         type: 'WS:BROADCAST:TABLE',
         meta: { id },
@@ -114,6 +115,8 @@ const notifyGameEnd = function* () {
       })
     )
   );
+
+  yield call(buildRanking);
 };
 
 const getWinCard = function* () {
@@ -225,14 +228,50 @@ const notifyPlayerPick = function* (id) {
 };
 
 const buildRanking = function* () {
-  // TODO
+  const { id } = yield select(prop('room.settings'));
+  const tables = yield select(prop('room.tables.tables'));
+
+  const rank = pipe(
+    reduce(
+      (all, { players, points }) => [
+        ...all,
+        ...players.map(({ email, nickname }) => ({
+          nickname,
+          points: points[email]
+        }))
+      ],
+      []
+    ),
+    orderBy(['points', 'nickname'], ['desc', 'asc']),
+    reduce(
+      (rec, { nickname, points }) => {
+        const position = points < rec.points ? rec.position + 1 : rec.position;
+        return {
+          list: [...rec.list, { nickname, points, position }],
+          points,
+          position
+        };
+      },
+      { list: [], position: 0, points: Number.MAX_SAFE_INTEGER }
+    ),
+    prop('list')
+  )(tables);
+
+  const rankAction = ranking.replace(rank);
+
+  yield put(rankAction);
+
+  yield put({
+    type: 'WS:BROADCAST:ROOM',
+    meta: { roomId: id },
+    payload: rankAction
+  });
 };
 
 export default function* () {
   yield all([
     takeLeading(start.type, startGame),
-    takeEvery(tableClient.pick.type, playersPick),
-    takeLatest(ended.type, buildRanking)
+    takeEvery(tableClient.pick.type, playersPick)
     // TODO: allow to cancel current game
   ]);
 }

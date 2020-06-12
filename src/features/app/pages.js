@@ -3,6 +3,7 @@ import React from 'react';
 import Admin from 'features/admin/RoomForm';
 import AdminRoom from 'features/admin/Room';
 import Play from 'features/play';
+import Ranking from 'features/ranking';
 
 import { useSelector } from 'react-redux';
 import { prop } from 'lodash/fp';
@@ -28,5 +29,6 @@ export default {
   Admin,
   AdminRoom,
   Play,
+  Ranking,
   NotFound
 };

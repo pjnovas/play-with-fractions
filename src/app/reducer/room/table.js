@@ -1,6 +1,8 @@
-// Reducer only for Client
+// Reducer only for Player client
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { prop } from 'lodash/fp';
+
 import { Status } from './tables';
 
 export const table = createSlice({
@@ -36,5 +38,9 @@ export const table = createSlice({
 });
 
 export const { replace, deal, tick, pick, round, ended } = table.actions;
+
+export const hasEnded = createSelector(prop('table.status'), status =>
+  [Status.Ended].includes(status)
+);
 
 export default table.reducer;

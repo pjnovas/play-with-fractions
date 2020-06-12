@@ -143,6 +143,10 @@ const reloadCurrent = function* (action) {
       yield take(replace.type); // wait for room
       break;
     }
+    case Routes.RANKING: {
+      // TODO: fetch ranking
+      break;
+    }
     case Routes.PLAY: {
       if (allowLocalAuth) {
         try {

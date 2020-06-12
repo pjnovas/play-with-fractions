@@ -1,4 +1,4 @@
-import { prop, pipe, isEqual } from 'lodash/fp';
+import { prop, has, pipe, isEqual } from 'lodash/fp';
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const wsURL = process.env.REACT_APP_WS_URL;
@@ -33,5 +33,6 @@ export const getWSUrl = createSelector(
 );
 
 export const isOnline = pipe(prop(`${websocket.name}.status`), isEqual('OPEN'));
+export const isClientAdmin = has('location.params.token');
 
 export default websocket.reducer;
