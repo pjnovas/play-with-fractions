@@ -7,6 +7,22 @@
   justify-content: center;
 }
 
+.animStarted {
+  font-size: 4rem;
+}
+
+.setready {
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+}
+
+.setready b {
+  font-size: 2.5em;
+  padding-left: 0.2em;
+  color: #ffc83d;
+}
+
 .animRotate {
   animation: spin 1.5s infinite linear;
   font-size: 4rem;

@@ -39,6 +39,10 @@ export const table = createSlice({
 
 export const { replace, deal, tick, pick, round, ended } = table.actions;
 
+export const hasStarted = createSelector(prop('table.status'), status =>
+  [Status.Started].includes(status)
+);
+
 export const hasEnded = createSelector(prop('table.status'), status =>
   [Status.Ended].includes(status)
 );

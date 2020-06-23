@@ -51,6 +51,7 @@ const getTables = (players, { maxPlayers, maxPerTable }) => {
 
 const notifyGamePlay = function* () {
   const allTables = yield select(prop('room.tables'));
+  const { status, winCard, cards, timeout } = allTables;
 
   yield put({
     type: 'WS:BROADCAST:ADMINS',
@@ -58,7 +59,7 @@ const notifyGamePlay = function* () {
   });
 
   yield all(
-    allTables.tables.map(({ id, players, status, points }) =>
+    allTables.tables.map(({ id, players, points }) =>
       put({
         type: 'WS:BROADCAST:TABLE',
         meta: { id },
@@ -67,10 +68,10 @@ const notifyGamePlay = function* () {
           status,
           players,
           points,
-          pick: allTables.status === Status.WaitingPicks ? '' : noop(),
-          winCard: allTables.winCard,
-          cards: allTables.cards,
-          timeout: allTables.timeout
+          pick: status === Status.WaitingPicks ? '' : noop(),
+          winCard,
+          cards,
+          timeout
         })
       })
     )

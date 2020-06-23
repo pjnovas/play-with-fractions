@@ -10,6 +10,7 @@ import Players from './Players';
 import RoomLink from './RoomLink';
 import Header from './RoomHeader';
 import Tables from './Tables';
+import Ranking from 'features/ranking';
 
 const help = {
   waiting:
@@ -47,7 +48,7 @@ const Lobby = () => {
           total={settings.maxPlayers}
         />
       </div>
-      {isFinished && <h2>Partida terminada [agregar link ranking]</h2>}
+      {isFinished && <Ranking />}
     </>
   );
 };
