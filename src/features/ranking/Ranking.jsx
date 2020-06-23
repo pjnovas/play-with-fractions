@@ -15,7 +15,7 @@ const Ranking = () => {
       <table className={styles.rank}>
         <thead>
           <tr>
-            <th>Posición</th>
+            <th></th>
             <th>Nombre</th>
             <th>Puntos</th>
           </tr>
@@ -28,7 +28,7 @@ const Ranking = () => {
           ) : (
             players.map(({ position, nickname, points }) => (
               <tr key={nickname} className={me === nickname ? styles.me : ''}>
-                <td>{position}</td>
+                <td>{`#${position}`}</td>
                 <td>{nickname}</td>
                 <td>{points}</td>
               </tr>

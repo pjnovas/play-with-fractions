@@ -2,17 +2,18 @@ import React from 'react';
 import styles from './Play.module.css';
 import { prop } from 'lodash/fp';
 import { useSelector } from 'react-redux';
-import { hasStarted, hasEnded } from 'app/reducer/room/table';
+import { isLoading, hasStarted, hasEnded } from 'app/reducer/room/table';
 import PlayerForm from './PlayerForm';
 import GameTable from './GameTable';
 import Emoji from 'components/Emoji';
 import Ranking from 'features/ranking';
 
 const Play = () => {
-  const { loading, ...player } = useSelector(prop('player'));
+  const player = useSelector(prop('player'));
   const { timeout } = useSelector(prop('table'));
   const isFinished = useSelector(hasEnded);
   const justStarted = useSelector(hasStarted);
+  const loading = useSelector(isLoading);
 
   if (justStarted) {
     return (
@@ -28,19 +29,19 @@ const Play = () => {
     );
   }
 
+  if (!player?.nickname) {
+    return (
+      <div className="game">
+        <PlayerForm />
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className={styles.fullscreen}>
         <Emoji text="🙂" className={styles.animRotate} />
         <span>Esperando inicio de partida...</span>
-      </div>
-    );
-  }
-
-  if (!player?.nickname) {
-    return (
-      <div className="game">
-        <PlayerForm />
       </div>
     );
   }

@@ -4,7 +4,6 @@ import {
   all,
   takeLeading,
   takeEvery,
-  takeLatest,
   select,
   put,
   delay,

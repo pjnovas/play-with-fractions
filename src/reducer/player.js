@@ -10,7 +10,7 @@ export const player = createSlice({
     loading: false
   },
   reducers: {
-    setLoading: (state, { payload }) => ({ ...state, loading: payload }),
+    setLoading: (state, { payload }) => ({ ...state, loading: false }), // TODO: remove this state
     setData: (state, { payload }) => ({ ...state, ...payload })
   }
 });
