@@ -5,18 +5,16 @@ import logger from './logger';
 import reducer from './reducer';
 import effects from './effects';
 
+const logs = process.env.LOGGER;
+
 const sagaMiddleware = createSagaMiddleware();
 
-const middleware = [
-  ...getDefaultMiddleware({ thunk: false }),
-  sagaMiddleware,
-  logger
-];
+const middleware = [...getDefaultMiddleware({ thunk: false }), sagaMiddleware];
 
 export default () => {
   const store = configureStore({
     devTools: false,
-    middleware,
+    middleware: logs ? [...middleware, logger] : middleware,
     reducer
   });
 
