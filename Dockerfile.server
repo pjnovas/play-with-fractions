@@ -1,4 +1,4 @@
-FROM node:10-slim
+FROM node:10-slim as build
 
 RUN npm i npm@latest -g
 
@@ -13,8 +13,6 @@ USER node
 RUN npm install --production
 
 COPY --chown=node:node . .
-
-RUN npm run build
 
 EXPOSE 8080
 

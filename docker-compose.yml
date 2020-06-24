@@ -1,19 +1,28 @@
 version: '3.3'
 
 services:
-  fractions:
-    container_name: fractions
-    build: .
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
     ports:
-      - '4500:8080'
-    restart: always
+      - '4600:3000'
     volumes:
-      - .:/home/node/app
-      - website:/home/node/app/build
-      - node_modules:/home/node/app/node_modules
+      - /home/node/app/node_modules
+    restart: on-failure
+    container_name: fractions_client
     env_file:
       - .env
 
-volumes:
-  website:
-  node_modules:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - '4500:8080'
+    restart: on-failure
+    container_name: fractions_backend
+    volumes:
+      - /home/node/app/node_modules
+    env_file:
+      - .env
