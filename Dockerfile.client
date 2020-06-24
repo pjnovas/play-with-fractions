@@ -1,6 +1,6 @@
 ############################################
 # Stage 1 - BUILD
-FROM node:10-slim as build
+FROM node:12-slim as build
 
 RUN npm i npm@latest -g
 
