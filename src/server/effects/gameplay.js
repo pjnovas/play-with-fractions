@@ -24,6 +24,7 @@ import {
   Status
 } from 'app/reducer/room/tables';
 
+import * as roomPlayers from 'app/reducer/room/players';
 import * as tableClient from 'app/reducer/room/table';
 import * as ranking from 'app/reducer/room/ranking';
 import { getTablesConfig } from 'app/utils/room';
@@ -153,7 +154,7 @@ const startGame = function* () {
     roundTimeout
   } = yield select(prop('room.settings'));
 
-  const players = yield select(prop('room.players'));
+  const players = yield select(roomPlayers.getOnlinePlayers);
 
   yield put(
     create({
