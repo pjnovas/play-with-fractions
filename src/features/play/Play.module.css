@@ -23,6 +23,18 @@
   color: #ffc83d;
 }
 
+.waiting {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+}
+
+.waiting b {
+  font-size: 1.5em;
+  padding-left: 0.2em;
+  color: #ffc83d;
+}
+
 .animRotate {
   animation: spin 1.5s infinite linear;
   font-size: 4rem;
@@ -35,4 +47,14 @@
   to {
     transform: rotate(359deg);
   }
+}
+
+.logout {
+  position: fixed;
+  top: 0;
+  right: 0;
+  border: none;
+  padding: 0.3em;
+  z-index: 1000;
+  background: transparent;
 }
