@@ -1,5 +1,6 @@
 import React from 'react';
 
+import styles from './Home.module.css';
 import Admin from 'features/admin/RoomForm';
 import AdminRoom from 'features/admin/Room';
 import Play from 'features/play';
@@ -9,8 +10,11 @@ import { useSelector } from 'react-redux';
 import { prop } from 'lodash/fp';
 
 const Home = () => (
-  <div>
-    <p>Welcome home!</p>
+  <div className={styles.hero}>
+    <div>
+      l0-0l<span>.xyz</span>
+    </div>
+    <p>Play with fractions</p>
   </div>
 );
 
