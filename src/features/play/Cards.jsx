@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import styles from './Cards.module.css';
-import { noop, shuffle, take } from 'lodash';
+import { shuffle, take } from 'lodash';
 import { prop } from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { getFraction } from 'app/utils/room';
@@ -35,7 +35,7 @@ const Cards = () => {
                 : styles.incorrect
               : ''
           ].join(' ')}
-          onClick={pick ? noop : onPickCard(card)}
+          onClick={onPickCard(card)}
         >
           <div
             className={styles.cardInner}

@@ -1,6 +1,6 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { take, drop, identity, mapValues, keyBy } from 'lodash';
-import { prop } from 'lodash/fp';
+import { prop, pipe } from 'lodash/fp';
 import shortid from 'shortid';
 
 export const Status = {
@@ -69,29 +69,36 @@ export const tables = createSlice({
       if (!table) return state;
 
       const email = payload.player;
-      table.picks[email] = payload.pick;
+      table.picks[email] = { card: payload.pick, at: state.timeout / 1000 };
 
       const player = table.players.find(player => player.email === email);
       player.state = 'pick';
     },
-    round: (state, { payload }) => ({
-      ...state,
-      timeout: state.waitTimeout,
-      status: Status.EndRound,
-      winCard: payload,
-      tables: state.tables.map(table => ({
-        ...table,
-        players: table.players.map(player => ({
-          ...player,
-          state: table.picks[player.email] === payload ? 'win' : 'loose'
-        })),
-        points: mapValues(
-          table.points,
-          (points, player) => points + (table.picks[player] === payload ? 1 : 0)
-        )
-      }))
-    }),
-    ended: (state, { payload }) => ({
+    round: (state, { payload }) => {
+      const checkWin = pick => pick.card === payload;
+      const fromPick = (table, email) => table.picks[email] || {};
+      const isWin = pipe(fromPick, checkWin);
+      const getPoints = pipe(fromPick, pick => (checkWin(pick) ? pick.at : 0));
+
+      return {
+        ...state,
+        timeout: state.waitTimeout,
+        status: Status.EndRound,
+        winCard: payload,
+        tables: state.tables.map(table => ({
+          ...table,
+          players: table.players.map(player => ({
+            ...player,
+            state: isWin(table, player.email) ? 'win' : 'loose'
+          })),
+          points: mapValues(
+            table.points,
+            (points, email) => points + getPoints(table, email)
+          )
+        }))
+      };
+    },
+    ended: state => ({
       ...state,
       status: Status.Ended
     })

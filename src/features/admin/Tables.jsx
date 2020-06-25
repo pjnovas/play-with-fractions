@@ -1,33 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Tables.module.css';
-import { propOr } from 'lodash/fp';
+import { propOr, map, orderBy, pipe } from 'lodash/fp';
 import { useSelector } from 'react-redux';
 
 import CardList from './CardList';
 
-const Table = ({ winCard, players, points, picks }) => (
-  <div className={styles.table}>
-    {players.map(({ email, nickname }) => (
-      <div>
-        <div>{points[email]}</div>
-        <div className={winCard && !picks[email] ? styles.empty : ''}>
-          {nickname}
-        </div>
-        {picks[email] && (
-          <div
-            className={
-              winCard === picks[email]
-                ? styles.correct
-                : (winCard && styles.incorrect) || ''
-            }
-          >
-            {picks[email]}
-          </div>
-        )}
+const TablePlayer = ({ winCard, nickname, points, pick }) => (
+  <div>
+    <div>{points}</div>
+    <div className={winCard && !pick ? styles.empty : ''}>{nickname}</div>
+    {pick && (
+      <div
+        className={
+          winCard === pick
+            ? styles.correct
+            : (winCard && styles.incorrect) || ''
+        }
+      >
+        {pick}
       </div>
-    ))}
+    )}
   </div>
 );
+
+// TODO: make a selector for this
+const Table = ({ players, points, picks, winCard }) => {
+  const [tablePlayers, setPlayers] = useState([]);
+
+  useEffect(() => {
+    const translated = pipe(
+      map(({ email, nickname }) => ({
+        nickname,
+        points: points[email],
+        pick: picks[email] && picks[email].card
+      })),
+      orderBy(['points', 'nickname'], ['desc', 'asc'])
+    )(players);
+
+    setPlayers(translated);
+  }, [players, points, picks]);
+
+  return (
+    tablePlayers.length && (
+      <div className={styles.table}>
+        {tablePlayers.map(props => (
+          <TablePlayer key={props.nickname} winCard={winCard} {...props} />
+        ))}
+      </div>
+    )
+  );
+};
 
 const Tables = () => {
   const { deck, cards, winCard, tables } = useSelector(

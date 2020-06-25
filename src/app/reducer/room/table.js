@@ -1,7 +1,7 @@
 // Reducer only for Player client
 
 import { createSlice, createSelector } from '@reduxjs/toolkit';
-import { prop } from 'lodash/fp';
+import { prop, pipe, orderBy, map } from 'lodash/fp';
 
 import { Status } from './tables';
 
@@ -49,6 +49,21 @@ export const isLoading = createSelector(prop('table.status'), status =>
 
 export const hasEnded = createSelector(prop('table.status'), status =>
   [Status.Ended].includes(status)
+);
+
+export const tablePlayers = createSelector(
+  prop('table'),
+  prop('player'),
+  ({ players, points }, me) =>
+    pipe(
+      map(({ email, nickname, state }) => ({
+        nickname,
+        points: points[email],
+        me: email === me.email,
+        state
+      })),
+      orderBy(['points', 'nickname'], ['desc', 'asc'])
+    )(players)
 );
 
 export default table.reducer;
