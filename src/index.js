@@ -6,7 +6,7 @@ import createStore from './createStore';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 
-// import preload from './tmp/15.state_round.json';
+// import preload from './tmp/ranking_empty.player.json';
 const preload = {};
 
 const { store, firstRoute } = createStore(preload);

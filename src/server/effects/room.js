@@ -24,9 +24,16 @@ const createRoom = function* (action) {
     })
   );
 
+  yield put(tables.reset());
+
   yield put({
     type: 'WS:BROADCAST:ADMINS',
     payload: rooms.replace(room)
+  });
+
+  yield put({
+    type: 'WS:BROADCAST:ALL',
+    payload: tableClient.reset()
   });
 };
 
@@ -93,9 +100,20 @@ const onRemoveClient = function* (action) {
   yield put(players.disconnect(action.payload));
 };
 
+const clearRoom = function* () {
+  const rankAction = ranking.replace([]);
+  yield put(rankAction);
+
+  yield put({
+    type: 'WS:BROADCAST:ALL',
+    payload: rankAction
+  });
+};
+
 export default function* () {
   yield all([
     takeEvery(rooms.create.type, createRoom),
+    takeEvery(rooms.create.type, clearRoom),
     takeEvery(newConnection.type, resolveConn),
     takeEvery(removeClient.type, onRemoveClient),
     takeEvery(rooms.fetch.type, sendCurrentRoomData),

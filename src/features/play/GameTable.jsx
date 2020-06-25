@@ -16,8 +16,10 @@ const Messages = ({ fixed }) => {
     if (winCard) {
       if (winCard === pick) {
         msg = 'Muy bien!';
-      } else {
+      } else if (pick) {
         msg = 'Ups!, esa no era';
+      } else {
+        msg = 'La próxima seleccioná mas rápido!';
       }
     } else if (!pick) {
       msg = 'Seleccioná una carta antes de que se termine el tiempo!';

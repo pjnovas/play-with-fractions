@@ -5,18 +5,21 @@ import { prop, pipe, orderBy, map } from 'lodash/fp';
 
 import { Status } from './tables';
 
+const initialState = {
+  id: null,
+  players: [],
+  status: Status.WaitingPlayers,
+  points: {},
+  cards: [],
+  timeout: 0,
+  pick: '' // card
+};
+
 export const table = createSlice({
   name: 'table',
-  initialState: {
-    id: null,
-    players: [],
-    status: Status.WaitingPlayers,
-    points: {},
-    cards: [],
-    timeout: 0,
-    pick: '' // card
-  },
+  initialState,
   reducers: {
+    reset: () => initialState,
     replace: (state, action) => ({
       ...state,
       ...action.payload
@@ -37,7 +40,7 @@ export const table = createSlice({
   }
 });
 
-export const { replace, deal, tick, pick, round, ended } = table.actions;
+export const { replace, deal, tick, pick, round, ended, reset } = table.actions;
 
 export const hasStarted = createSelector(prop('table.status'), status =>
   [Status.Started].includes(status)

@@ -39,6 +39,7 @@ export const tables = createSlice({
   name: 'room/tables',
   initialState,
   reducers: {
+    reset: () => initialState,
     start: identity,
     create: (state, { payload }) => ({
       ...initialState,
@@ -113,7 +114,8 @@ export const {
   tick,
   pick,
   round,
-  ended
+  ended,
+  reset
 } = tables.actions;
 
 // Selectors

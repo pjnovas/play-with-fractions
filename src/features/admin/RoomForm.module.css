@@ -32,6 +32,7 @@ form > div {
 
 .row > div > input {
   margin-left: 1em;
+  max-width: 60px;
 }
 
 .helpTables {
@@ -61,6 +62,9 @@ form > div {
 .roundCards > label {
   font-size: 1em;
   padding-right: 1em;
+}
+.roundCards input {
+  max-width: 60px;
 }
 
 input,

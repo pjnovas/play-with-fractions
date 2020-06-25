@@ -8,13 +8,27 @@ This is also an experiment of making a realtime game using web sockets to share 
 
 ## Running locally
 
-Configure your `.env` file from `example.env`
+Copy `example.env` into `.env` file and set your settings
+
+## Docker
+
+For running a quick peek with docker (leave the `.env` file as it is from `example.env`) and fire a
+
+```bash
+docker-compose up --build
+```
+
+Then go to `http://localhost:4600/admin/some-secret` you should be able to create a game from there
+
+## Manually
 
 - `yarn`: install dependencies
 - `yarn start`: build and run react app with dev server
 - `yarn server:dev`: lift up the websockets server with nodemon
 
 ## For production
+
+`docker-compose` should be ready for production by just changing `.env` settings
 
 - `yarn build`: build client website app
 - `yarn server`: lift up the websockets server

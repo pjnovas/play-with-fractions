@@ -29,12 +29,13 @@
 
 .card:hover,
 .card.selected {
-  box-shadow: 0 0 10px rgba(255,255,255,1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 1);
   top: -1em;
 }
 
 .card.notSelected:hover,
-.card.notSelected {
+.card.notSelected,
+.card.incorrect {
   box-shadow: none;
   top: 0;
   opacity: 0.5;

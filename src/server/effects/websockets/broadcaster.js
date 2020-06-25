@@ -3,12 +3,27 @@ import { take, fork, select } from 'redux-saga/effects';
 import { getRoomIds, getAdminIds } from 'app/reducer/sockets';
 import { getSocketIdsByTableId } from 'app/reducer/room/tables';
 
+const broadcastAll = (server, action) => {
+  server.clients.forEach(ws => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(action));
+    }
+  });
+};
+
 const broadcastToIds = (server, ids, action) => {
   server.clients.forEach(ws => {
     if (ws.readyState === WebSocket.OPEN && ids.includes(ws.id)) {
       ws.send(JSON.stringify(action));
     }
   });
+};
+
+const allBroadcaster = function* (server) {
+  while (true) {
+    const { payload } = yield take('WS:BROADCAST:ALL');
+    broadcastAll(server, payload);
+  }
 };
 
 const roomBroadcaster = function* (server) {
@@ -36,6 +51,7 @@ const adminBroadcaster = function* (server) {
 };
 
 export default function* (server) {
+  yield fork(allBroadcaster, server);
   yield fork(roomBroadcaster, server);
   yield fork(tableBroadcaster, server);
   yield fork(adminBroadcaster, server);

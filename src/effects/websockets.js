@@ -9,7 +9,7 @@ import {
   delay
 } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
-import { pick } from 'lodash';
+import { pick, isEmpty } from 'lodash';
 import { prop } from 'lodash/fp';
 
 import {
@@ -21,6 +21,7 @@ import {
 } from 'reducer/websocket';
 
 import { replace, fetch, notFound } from 'app/reducer/room/settings';
+import { reset } from 'app/reducer/room/table';
 import { join } from 'app/reducer/room/players';
 import { setLoading, setData } from 'reducer/player';
 import { types as Routes } from 'routes';
@@ -150,10 +151,12 @@ const reloadCurrent = function* (action) {
     case Routes.PLAY: {
       if (allowLocalAuth) {
         try {
-          const roomId = yield select(prop('location.params.roomId'));
+          const isAdmin = yield select(prop('location.params.token'));
+          if (isAdmin) return;
+
           let data = JSON.parse(window.localStorage.getItem('player'));
 
-          if (data.roomId === roomId) {
+          if (!isEmpty(data)) {
             const player = pick(data, ['nickname', 'email']);
 
             yield put({
@@ -188,9 +191,8 @@ const storePlayerInfo = function* (action) {
 };
 
 const onRoomNotFound = function* (action) {
-  const roomId = yield select(prop('location.params.roomId'));
-  console.log('<< room not found! >>', roomId);
-  window.localStorage.removeItem('player');
+  if (yield select(prop('location.params.token'))) return;
+  window.location.replace('/');
 };
 
 const onNewRoom = function* (action) {
@@ -216,6 +218,7 @@ export default function* () {
     // ...
     takeEvery(setData, storePlayerInfo),
     takeEvery(replace.type, onNewRoom),
-    takeEvery(notFound.type, onRoomNotFound)
+    takeEvery(notFound.type, onRoomNotFound),
+    takeEvery(reset.type, onRoomNotFound)
   ]);
 }

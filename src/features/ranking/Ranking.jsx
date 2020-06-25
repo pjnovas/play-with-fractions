@@ -11,31 +11,29 @@ const Ranking = () => {
 
   return (
     <div className={styles.Ranking}>
-      <h1>Ranking</h1>
-      <table className={styles.rank}>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Nombre</th>
-            <th>Puntos</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr colspan={3}>
-              <td>Cargando posiciones ...</td>
-            </tr>
-          ) : (
-            players.map(({ position, nickname, points }) => (
-              <tr key={nickname} className={me === nickname ? styles.me : ''}>
-                <td>{`#${position}`}</td>
-                <td>{nickname}</td>
-                <td>{points}</td>
+      {!loading && players.length && (
+        <>
+          <h1>Ranking</h1>
+          <table className={styles.rank}>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Nombre</th>
+                <th>Puntos</th>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {players.map(({ position, nickname, points }) => (
+                <tr key={nickname} className={me === nickname ? styles.me : ''}>
+                  <td>{`#${position}`}</td>
+                  <td>{nickname}</td>
+                  <td>{points}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 };
