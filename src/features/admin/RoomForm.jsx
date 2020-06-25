@@ -61,8 +61,8 @@ const RoomForm = () => {
   const online = useSelector(isOnline);
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
-      maxPlayers: 5, // 24,
-      maxPerTable: 3,
+      maxPlayers: 20,
+      maxPerTable: 4,
       waitTimeout: 5,
       roundTimeout: 15,
       cardsPerRound: 3,
