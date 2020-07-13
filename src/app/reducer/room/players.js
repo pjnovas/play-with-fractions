@@ -10,6 +10,7 @@ export const players = createSlice({
     // sockets: []
   ],
   reducers: {
+    reset: () => [],
     replace: (state, { payload }) => payload,
     join: (state, action) => {
       const player = state.find(
@@ -37,7 +38,7 @@ export const players = createSlice({
   }
 });
 
-export const { join, replace, disconnect } = players.actions;
+export const { join, replace, disconnect, reset } = players.actions;
 
 // Selectors
 

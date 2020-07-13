@@ -71,7 +71,9 @@ const Room = () => {
       ) : (
         <>
           <RoomLink />
-          <h1>Partida {settings.name}</h1>
+          <button className={styles.newOne} onClick={goToNewRoom}>
+            {'< Crear Otra'}
+          </button>
           <Header />
           {isPlaying ? <Tables /> : <Lobby />}
         </>

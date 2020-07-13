@@ -102,11 +102,19 @@ const onRemoveClient = function* (action) {
 
 const clearRoom = function* () {
   const rankAction = ranking.replace([]);
+  const playersAction = players.reset();
+
   yield put(rankAction);
+  yield put(playersAction);
 
   yield put({
     type: 'WS:BROADCAST:ALL',
     payload: rankAction
+  });
+
+  yield put({
+    type: 'WS:BROADCAST:ADMINS',
+    payload: playersAction
   });
 };
 

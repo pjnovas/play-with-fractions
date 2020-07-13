@@ -1,14 +1,17 @@
 .content {
   max-width: 1000px;
   margin: 0 auto;
-}
-
-.content h1 {
-  text-align: center;
+  padding-top: 10px;
 }
 
 .playerLists {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+}
+
+.newOne {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
